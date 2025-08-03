@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { fetchProductById, fetchSellersByProduct } from '../services/ApiServices'
+import { fetchProductById, fetchSellersByProduct } from '../services/apiServices'
 import { mapActions,mapGetters } from 'pinia'
 import { useCartStore } from '../stores/cartStore'
 import { useAuthStore } from '@/stores/authStore'
