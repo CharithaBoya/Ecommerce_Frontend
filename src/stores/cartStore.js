@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { postCartItem, getCartItems, deleteCartItem } from '../services/ApiServices'
+import { postCartItem, getCartItems, deleteCartItem } from '../services/apiServices'
 import { useAuthStore } from './authStore';
 
 export const useCartStore = defineStore('cart', {

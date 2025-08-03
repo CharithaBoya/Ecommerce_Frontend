@@ -1,15 +1,5 @@
 <script>
 import { RouterLink, RouterView } from 'vue-router'
-<<<<<<< HEAD
-</script>
-
-<template>
-  <header>
-    
-  </header>
-
-  <RouterView />
-=======
 import Navbar from '@/components/Navbar.vue';
 
 export default {
@@ -24,7 +14,7 @@ export default {
     <Navbar />
     <router-view />
   </div>
->>>>>>> d68967e (head and nav, search)
+
 </template>
 
 <style>

@@ -48,7 +48,7 @@ export default {
 </template>
 
 
-<style scoped lang="scss">
+<style scoped>
 .products {
   padding: 2rem;
 

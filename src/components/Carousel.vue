@@ -32,22 +32,21 @@ images: [
 
 
 
-<style lang="scss" scoped>
+<style scoped>
 .carousel-container {
   width: 100vw;
   overflow: hidden;
-//   justify-content: center;
+
 
   .carousel {
     display: flex;
-    // justify-content: center;
+
     transition: transform 0.5s ease-in-out;
 
     .carousel-item {
       min-width: 100vw;
 
       img {
-        // width: 100%;
         height: 400px;
         object-fit: cover;
         display: block;

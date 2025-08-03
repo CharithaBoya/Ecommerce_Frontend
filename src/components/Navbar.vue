@@ -81,7 +81,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .navbar {
   width: 100%;
   display: flex;
