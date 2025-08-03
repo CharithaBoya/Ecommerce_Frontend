@@ -13,7 +13,9 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
+ 
     {
+<<<<<<< HEAD
     path: '/product/:id',
     name: 'ProductDetail',
     component: () => import('../views/ProductDetails.vue'),
@@ -45,6 +47,14 @@ const router = createRouter({
 }
 
 ],
+=======
+      path: "/category/:categoryName",
+     name: "CategoryProducts",
+     component: () => import("@/views/CategoryProducts.vue") // or wherever your file is
+}
+
+  ],
+>>>>>>> d68967e (head and nav, search)
 })
 
 export default router

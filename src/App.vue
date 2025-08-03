@@ -1,5 +1,6 @@
-<script setup>
+<script>
 import { RouterLink, RouterView } from 'vue-router'
+<<<<<<< HEAD
 </script>
 
 <template>
@@ -8,68 +9,41 @@ import { RouterLink, RouterView } from 'vue-router'
   </header>
 
   <RouterView />
+=======
+import Navbar from '@/components/Navbar.vue';
+
+export default {
+  components: {
+    Navbar,
+  },
+};
+</script>
+
+<template>
+  <div id="app">
+    <Navbar />
+    <router-view />
+  </div>
+>>>>>>> d68967e (head and nav, search)
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+<style>
+body {
+  margin: 0;
+  font-family: 'Roboto';
+  background-color: #f8f9fa;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
+#app {
   width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+  display: block;
+
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+body {
+  margin: 0;
+  font-family:'Roboto';
+  background-color: #f8f9fa;
 }
 </style>
+
