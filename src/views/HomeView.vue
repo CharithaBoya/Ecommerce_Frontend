@@ -1,9 +1,4 @@
 <template>
-<<<<<<< HEAD
-</template>
-<script>
-</script>
-=======
   <div>
     <Carousel />
     <Categories />
@@ -28,4 +23,4 @@ export default {
   }
 }
 </script>
->>>>>>> d68967e (head and nav, search)
+

@@ -6,7 +6,14 @@
       ☰
     </div>
 
-    <input type="text" class="searchBar" placeholder="      Search..."/>
+<input
+  v-model="searchQuery"
+  @keyup.enter="searchProduct"
+  type="text"
+  class="searchBar"
+  placeholder="Search..."
+/>
+
 
 <ul :class="['navbar-links', { active: isMenuOpen }]">
   <li>
@@ -29,12 +36,11 @@
 
 
 <div class="profile-container">
-    <!-- If not logged in, just show Login/Sign Up -->
+  
     <template v-if="!isLoggedIn">
       <router-link to="/login" class="login-link">Login / Sign Up</router-link>
     </template>
 
-    <!-- If logged in, show profile icon with dropdown -->
     <template v-else>
       <div class="profile-dropdown" @click="toggleDropdown">
         <img
@@ -61,7 +67,8 @@ export default {
     return {
       isMenuOpen: false,
       showDropdown: false,
-    isLoggedIn: true 
+    isLoggedIn: true,
+    searchQuery: ''
     };
   },
   methods: {
@@ -75,7 +82,13 @@ export default {
     this.isLoggedIn = false;
     this.showDropdown = false;
       this.$router.push('/');
+  },
+    searchProduct() {
+    if (this.searchQuery.trim()) {
+      this.$router.push({ path: '/search', query: { q: this.searchQuery } });
+    }
   }
+
 
   },
 };
@@ -123,7 +136,7 @@ export default {
   .login-link {
   text-decoration: none;
   font-weight: 500;
-  color: #333;
+  color: #ffffff;
 }
   .profile-dropdown {
   position: relative;
@@ -136,6 +149,7 @@ export default {
   padding: 10px;
   right: 0;
   z-index: 999;
+  color: #ffffff;
 }
 .dropdown-menu a,
 .dropdown-menu button {
