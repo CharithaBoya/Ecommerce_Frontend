@@ -6,10 +6,11 @@
         v-for="(product, index) in products"
         :key="index"
         class="product-card"
+        @click="goToProduct(product.productId)"
       >
         <h3>{{ product.productName }}</h3>
         <p>{{ product.productDescription }}</p>
-        <p>Price: ₹{{ product.productPrice }}</p>
+    
       </div>
     </div>
     <p v-else>No products found.</p>
@@ -17,51 +18,31 @@
 </template>
 
 <script>
+import { getProductsByCategory } from "@/services/apiService";
 export default {
   name: "CategoryProducts",
   data() {
     return {
-      categoryName: this.$route.params.categoryName,
-      products: [] // will be filtered dummy data for now
+      categoryId: this.$route.params.categoryId,
+      products: [],
     };
   },
   mounted() {
     this.fetchProducts();
   },
   methods: {
-    fetchProducts() {
-      // Dummy data simulating a response from backend
-      const dummySellerProducts = [
-        {
-          productId: 1,
-          productName: "Nike Shoes",
-          productDescription: "High quality running shoes",
-          productCategory: "Fashion",
-          productPrice: 2500
-        },
-        {
-          productId: 2,
-          productName: "Smartphone",
-          productDescription: "Latest model with great features",
-          productCategory: "Electronics",
-          productPrice: 18000
-        },
-        {
-          productId: 3,
-          productName: "Yoga Mat",
-          productDescription: "Non-slip mat for fitness routines",
-          productCategory: "Fitness",
-          productPrice: 800
-        }
-      ];
-
-      this.products = dummySellerProducts.filter(
-        product =>
-          product.productCategory.toLowerCase() ===
-          this.categoryName.toLowerCase()
-      );
-    }
-  }
+    async fetchProducts() {
+      try {
+        const data = await getProductsByCategory(this.categoryId);
+        this.products = data;
+      } catch (error) {
+        console.error("Error loading category products:", error);
+      }
+    },
+    goToProduct(productId) {
+    this.$router.push(`/product/${productId}`);
+  },
+  },
 };
 </script>
 

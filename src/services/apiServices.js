@@ -2,7 +2,7 @@ import axios from 'axios'
 
 
 const api = axios.create({
-  baseURL: '/api'
+  baseURL: 'http://10.20.4.3:8080/product/api'
 })
 
 

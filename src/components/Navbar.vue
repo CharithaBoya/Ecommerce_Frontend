@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar">
-    <div class="navbar-logo">MyShop</div>
+    <div class="navbar-logo"><img src="https://i.ibb.co/pjxNNkC5/Click-NCart-logo-transparent.png"></div>
 
    
 
@@ -109,20 +109,19 @@ export default {
   width: 100%;
   background-color: #0a3d62;
   color: white;
-  padding: 0.8rem 1.2rem;
+  padding: 0.6rem 1rem;
   position: sticky;
   top: 0;
   z-index: 1000;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
 
-.navbar-logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-right: 1rem;
+.navbar-logo img {
+  height: 36px;
+  max-width: 120px;
 }
 
 .search-wrapper {
@@ -131,24 +130,26 @@ export default {
   align-items: center;
   position: relative;
   margin: 0 1rem;
+  min-width: 180px;
 }
 
 .searchBar {
   width: 100%;
   border-radius: 20px;
-  height: 40px;
-  padding: 0 2.2rem;
+  height: 34px;
+  padding: 0 2rem;
   box-sizing: border-box;
   border: none;
   outline: none;
+  font-size: 0.9rem;
 }
 
 .icon {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   cursor: pointer;
 }
 
@@ -162,9 +163,9 @@ export default {
 
 .navbar-links {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   list-style: none;
-  margin-left: auto;
+  margin: 0;
 }
 
 .navbar-links a {
@@ -175,19 +176,24 @@ export default {
 }
 
 .profile-container {
-  margin-left: 1rem;
+  display: flex;
+  align-items: center;
   position: relative;
+  margin-left: 0.5rem;
+  white-space: nowrap;
 }
 
 .login-link {
   text-decoration: none;
   font-weight: 500;
   color: #ffffff;
+  font-size: 0.9rem;
+  padding: 0 0.4rem;
 }
 
 .profile-icon {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -198,72 +204,99 @@ export default {
 
 .dropdown-menu {
   position: absolute;
-  background: black;
+  background: #111;
   border: 1px solid #ccc;
   padding: 10px;
   right: 0;
   z-index: 999;
   color: white;
+  border-radius: 5px;
 }
 
 .dropdown-menu a,
 .dropdown-menu button {
-  padding: 8px;
+  display: block;
+  padding: 8px 12px;
   background: none;
   border: none;
   cursor: pointer;
   text-decoration: none;
   color: white;
+  width: 100%;
+  text-align: left;
 }
 
 .navbar-toggle {
   display: none;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   cursor: pointer;
+  margin-left: 0.5rem;
+  position: relative;
   color: white;
-  margin-left: 1rem;
 }
 
-/* Mobile styles */
+.toggle-dropdown {
+  position: absolute;
+  background: #0a3d62;
+  top: 40px;
+  right: 0;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+}
+
+.toggle-dropdown .dropdown-link {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 0;
+}
+
+/* Mobile Styles */
 @media (max-width: 768px) {
   .navbar {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .navbar-logo {
+    align-self: flex-start;
   }
 
   .search-wrapper {
-    order: 2;
     width: 100%;
-    margin-top: 1rem;
+    margin: 0.5rem 0;
+    order: 2;
+  }
+
+  .navbar-links {
+    display: none;
+  }
+
+  .navbar-links.active {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .navbar-toggle {
+    display: block;
+    align-self: flex-end;
+    order: 4;
+    margin-top: 0.5rem;
   }
 
   .profile-container {
     order: 3;
     margin-top: 0.5rem;
-    margin-left: 0;
+    justify-content: flex-end;
   }
 
-  .navbar-toggle {
-    display: block;
-    order: 4;
-    margin-top: 0.5rem;
-  }
-
-  .navbar-links {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    margin-top: 1rem;
-  }
-
-  .navbar-links.active {
-    display: flex;
-  }
-
-  .navbar-links li {
-    padding: 0.5rem 0;
-    text-align: center;
+  .login-link {
+    white-space: nowrap;
   }
 }
-
-
 </style>
+

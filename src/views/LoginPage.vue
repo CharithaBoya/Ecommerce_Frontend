@@ -58,7 +58,7 @@ export default {
   max-width: 400px;
   margin: 80px auto;
   padding: 32px;
-  background: #bfa5a5;
+  background: #bfe5e4;
   border-radius: 12px;
 }
 

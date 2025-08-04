@@ -1,101 +1,97 @@
+<template>
+  <div class="products-wrapper">
+    <h2>Featured Products</h2>
+
+    <div v-if="loading">Loading products...</div>
+    <div v-else class="product-grid">
+      <router-link
+        v-for="product in products"
+        :key="product.sellerId + '-' + product.productId"
+        :to="`/product/${product.productId}`"
+        class="product-card-link"
+      >
+        <div class="product-card">
+          <img
+            v-if="product.productImageUrl"
+            :src="product.productImageUrl"
+            alt="Product Image"
+            class="product-image"
+          />
+          <h3>{{ product.productName }}</h3>
+          <p>₹{{ product.productPrice }}</p>
+          <p>⭐ {{ product.productRating }}</p>
+        </div>
+      </router-link>
+    </div>
+  </div>
+</template>
+
+
 <script>
-import axios from 'axios';
+import { getAllSellerProducts, getProductById } from "@/services/apiService";
 
 export default {
   name: "Products",
   data() {
     return {
-      products: []
+      products: [],
+      loading: false,
     };
   },
-  async mounted() {
+  async created() {
+    this.loading = true;
     try {
-      const sellerProducts = await getAllSellerProducts();
+      const res = await getAllSellerProducts();
+      const sellerProducts = res.data;
 
+      // For each product, fetch its image using productId
       const productsWithImages = await Promise.all(
         sellerProducts.map(async (product) => {
           try {
-            const productDetails = await fetchProductById(product.productId);
-            return {
-              ...product,
-              productImageUrl: productDetails.productImageUrl,
-            };
-          } catch (error) {
-            console.error("Failed to fetch product details:", error);
-            return product;
+            const imageRes = await getProductById(product.productId);
+            product.productImageUrl = imageRes.data.productImageUrl;
+          } catch (err) {
+            console.error(`Failed to get image for productId ${product.productId}`, err);
+            product.productImageUrl = null;
           }
+          return product;
         })
       );
 
       this.products = productsWithImages;
     } catch (error) {
-      console.error("Failed to fetch seller products:", error);
+      console.error("Error fetching seller products:", error);
+    } finally {
+      this.loading = false;
     }
-  }
-
+  },
 };
 </script>
 
-<template>
-  <section>
-    <div class="products">
-      <h2 class="products-title">Products</h2>
-      <div class="products__grid">
-        <div class="product-card" v-for="(product, index) in products" :key="index">
-          <img :src="product.image" :alt="product.name" class="product-card__image" />
-          <h3 class="product-card__name">{{ product.name }}</h3>
-          <p class="product-card__price">₹{{ product.price }}</p>
-        </div>
-      </div>
-    </div>
-  </section>
-</template>
-
 <style scoped>
-.products {
+.products-wrapper {
   padding: 2rem;
 }
 
-.products-title {
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.products__grid {
+.product-grid {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .product-card {
   padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  text-align: center;
-  background-color: #fff;
-  transition: box-shadow 0.3s;
-}
-
-.product-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.product-card__image {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
+  border: 1px solid #ccc;
   border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  text-align: center;
 }
 
-.product-card__name {
-  font-size: 1.1rem;
-  margin: 0.8rem 0 0.4rem;
-}
-
-.product-card__price {
-  color: #27ae60;
-  font-weight: bold;
-  margin-bottom: 0.8rem;
+.product-image {
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+  margin-bottom: 1rem;
 }
 </style>

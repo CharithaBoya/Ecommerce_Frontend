@@ -8,8 +8,8 @@
         :key="index"
         @click="goToCategory(category)"
       >
-        <img :src="category.imageUrl" :alt="category.name" />
-        <p>{{ category.name }}</p>
+        <img :src="category.categoryUrl" :alt="category.categoryName" />
+        <p>{{ category.categoryName }}</p>
       </div>
     </div>
   </section>
@@ -29,7 +29,8 @@ export default {
     async fetchCategories() {
       try {
         const data = await getAllCategories();
-        this.categories = data; // expecting array of { name, imageUrl }
+        this.categories = data; 
+        console.log("Fetched category data:", data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
       }
@@ -37,7 +38,9 @@ export default {
     goToCategory(category) {
       this.$router.push({
         name: "CategoryProducts",
-        params: { categoryName: category.name },
+        params: { categoryId: category.categoryId
+        },
+        
       });
     },
   },
