@@ -16,6 +16,13 @@ const router = createRouter({
     },
  
     {
+    path: '/product/:id',
+    name: 'ProductDetail',
+    component: () => import('../views/ProductDetails.vue'),
+
+      
+    },
+    {
 
     path: '/login', component: LoginPage },
       {
@@ -39,7 +46,6 @@ const router = createRouter({
   component: OrderSuccess
 },
 
-
 {
       path: "/category/:categoryName",
      name: "CategoryProducts",
@@ -53,8 +59,9 @@ const router = createRouter({
   component: UserDetails
 }
 
-  ],
 
+
+],
 })
 
 export default router
