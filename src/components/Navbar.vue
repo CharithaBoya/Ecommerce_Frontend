@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar">
-    <div class="navbar-logo"><img src="https://ibb.co/SwPHHZqG"></div>
+    <div class="navbar-logo"><img src="https://i.ibb.co/pjxNNkC5/Click-NCart-logo-transparent.png"></div>
 
     <div class="navbar-toggle" @click="toggleMenu">
       ☰
@@ -111,9 +111,11 @@ export default {
   box-sizing: border-box;
   flex-wrap: wrap;
 
-  .navbar-logo {
-    font-size: 1.5rem;
-    font-weight: bold;
+  .navbar-logo img {
+  height: 50px;
+  max-width: 160px;
+  object-fit: contain;
+  cursor: pointer;
   }
 
   .search-wrapper {

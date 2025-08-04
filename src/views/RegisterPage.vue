@@ -4,16 +4,17 @@
     <form @submit.prevent="handleRegister" class="form">
       <input v-model="name" placeholder="Full Name" class="input" required />
       <input v-model="phone" placeholder="Phone Number" class="input" required pattern="\d{10}" />
-      
+
       <input v-model="email" placeholder="Email ID" class="input" required />
       <div v-if="email && !isEmailValid" class="error">Enter a valid email address</div>
 
       <input v-model="password" type="password" placeholder="Password" class="input" required />
       <input v-model="confirmPassword" type="password" placeholder="Confirm Password" class="input" required />
       <div v-if="password && password !== confirmPassword" class="error">Passwords do not match</div>
-    <textarea v-model="address" placeholder="Address" class="input textarea" required></textarea>
 
-      <button class="btn">Register</button>
+      <textarea v-model="address" placeholder="Address" class="input textarea" required></textarea>
+
+      <button class="btn" :disabled="!formIsValid">Register</button>
     </form>
 
     <router-link to="/login" class="link">Already have an account? Login</router-link>
@@ -21,6 +22,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'RegisterForm',
   data() {
@@ -29,7 +32,8 @@ export default {
       phone: '',
       email: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      address: '',
     }
   },
   computed: {
@@ -39,23 +43,40 @@ export default {
     formIsValid() {
       return (
         this.name &&
-         this.phone &&
+        this.phone &&
         /^\d{10}$/.test(this.phone) &&
         this.isEmailValid &&
         this.password &&
-        this.confirmPassword === this.password
+        this.confirmPassword === this.password &&
+        this.address
       )
     }
   },
   methods: {
-    handleRegister() {
-      alert('Registered Successfully!')
-      // Add real registration logic here
+    async handleRegister() {
+      try {
+        const payload = {
+          customerName: this.name,
+          customerEmail: this.email,
+          customerPassword: this.password,
+          phoneNo: this.phone,
+          address: this.address
+        }
+
+        const response = await axios.post('http://localhost:8080/auth/register', payload)
+        alert(response.data)
+        this.$router.push('/login')
+      } catch (error) {
+        if (error.response && error.response.status === 409) {
+          alert('User already exists')
+        } else {
+          alert('Registration failed. Please try again.')
+        }
+      }
     }
   }
 }
 </script>
-
 
 <style scoped>
 .register {
@@ -64,7 +85,7 @@ export default {
   padding: 24px;
   border: 1px solid #eee;
   border-radius: 10px;
-  background:#bfe5e4;
+  background:#bfa5a5;
 }
 
 .title {
@@ -85,6 +106,10 @@ export default {
   font-size: 14px;
 }
 
+.textarea {
+  resize: vertical;
+}
+
 .error {
   font-size: 12px;
   color: #e53935;
@@ -98,12 +123,13 @@ export default {
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-
-
 }
-.btn:hover {
-  background-color: #2cafad;
-}
+
+  &:disabled {
+    background-color: #bbb;
+    cursor: not-allowed;
+  }
+
 
 .link {
   display: block;
