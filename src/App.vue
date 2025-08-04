@@ -1,7 +1,6 @@
 <script>
 import { RouterLink, RouterView } from 'vue-router';
 import Navbar from '@/components/Navbar.vue';
-
 export default {
   components: {
     Navbar,
@@ -14,10 +13,6 @@ export default {
     <Navbar />
     <router-view />
   </div>
-<<<<<<< HEAD
-=======
-
->>>>>>> 29785e323df86d51d5868eae9e24bfa51de860a5
 </template>
 
 <style>
