@@ -14,10 +14,6 @@ export default {
     <Navbar />
     <router-view />
   </div>
-<<<<<<< HEAD
-=======
-
->>>>>>> 3a54fc6fcf97977430b2aa07b40ef6475830cfdd
 </template>
 
 <style>

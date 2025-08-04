@@ -3,7 +3,7 @@
     <h2 class="title">Create Account</h2>
     <form @submit.prevent="handleRegister" class="form">
       <input v-model="name" placeholder="Full Name" class="input" required />
-      <input v-model="phone" placeholder="Phone Number" class="input" required pattern="\\d{10}" />
+      <input v-model="phone" placeholder="Phone Number" class="input" required pattern="\d{10}" />
       
       <input v-model="email" placeholder="Email ID" class="input" required />
       <div v-if="email && !isEmailValid" class="error">Enter a valid email address</div>
@@ -13,7 +13,7 @@
       <div v-if="password && password !== confirmPassword" class="error">Passwords do not match</div>
     <textarea v-model="address" placeholder="Address" class="input textarea" required></textarea>
 
-      <button :disabled="!formIsValid" class="btn">Register</button>
+      <button class="btn">Register</button>
     </form>
 
     <router-link to="/login" class="link">Already have an account? Login</router-link>
@@ -27,7 +27,6 @@ export default {
     return {
       name: '',
       phone: '',
-      username: '',
       email: '',
       password: '',
       confirmPassword: ''
@@ -40,8 +39,8 @@ export default {
     formIsValid() {
       return (
         this.name &&
-        this.phone &&
-        this.username &&
+         this.phone &&
+        /^\d{10}$/.test(this.phone) &&
         this.isEmailValid &&
         this.password &&
         this.confirmPassword === this.password

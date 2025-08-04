@@ -5,6 +5,7 @@ import RegisterPage from '@/views/RegisterPage.vue'
 import CartPage from '../views/CartPage.vue'
 import OrderHistory from '@/views/OrderHistory.vue'
 import OrderSuccess from '../views/OrderSuccess.vue'
+import UserDetails from '../views/UserDetails.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -15,16 +16,6 @@ const router = createRouter({
     },
  
     {
-<<<<<<< HEAD
-=======
-    path: '/product/:id',
-    name: 'ProductDetail',
-    component: () => import('../views/ProductDetails.vue'),
-
-      
-    },
-    {
->>>>>>> 3a54fc6fcf97977430b2aa07b40ef6475830cfdd
 
     path: '/login', component: LoginPage },
       {
@@ -48,19 +39,22 @@ const router = createRouter({
   component: OrderSuccess
 },
 
-<<<<<<< HEAD
 
 {
       path: "/category/:categoryName",
      name: "CategoryProducts",
-     component: () => import("@/views/CategoryProducts.vue") // or wherever your file is
+     component: () => import("@/views/CategoryProducts.vue") 
+},
+
+
+{
+  path: '/user-details',
+  name: 'UserDetails',
+  component: UserDetails
 }
 
   ],
 
-=======
-],
->>>>>>> 3a54fc6fcf97977430b2aa07b40ef6475830cfdd
 })
 
 export default router
