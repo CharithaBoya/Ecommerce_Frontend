@@ -15,6 +15,7 @@ const router = createRouter({
     },
  
     {
+
     path: '/product/:id',
     name: 'ProductDetail',
     component: () => import('../views/ProductDetails.vue'),
@@ -22,6 +23,7 @@ const router = createRouter({
       
     },
     {
+
 
     path: '/login', component: LoginPage },
       {
@@ -43,9 +45,17 @@ const router = createRouter({
   path: '/checkout-success',
   name: 'CheckoutSuccess',
   component: OrderSuccess
+},
+
+
+{
+      path: "/category/:categoryName",
+     name: "CategoryProducts",
+     component: () => import("@/views/CategoryProducts.vue") 
 }
 
-],
+  ],
+
 })
 
 export default router
