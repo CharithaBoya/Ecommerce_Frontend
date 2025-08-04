@@ -37,7 +37,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useCartStore, ['removeFromCart', 'updateCartQuantity', 'clearCart']),
+    ...mapActions(useCartStore, ['removeFromCart', 'updateCartQuantity', 'clearCart','addToCart']),
     ...mapActions(useOrderStore, ['placeOrder']),
 
     removeItem(productId) {

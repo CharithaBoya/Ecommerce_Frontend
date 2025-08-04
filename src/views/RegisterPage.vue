@@ -64,7 +64,7 @@ export default {
   padding: 24px;
   border: 1px solid #eee;
   border-radius: 10px;
-  background:#bfa5a5;
+  background:#bfe5e4;
 }
 
 .title {
@@ -92,17 +92,17 @@ export default {
 
 .btn {
   padding: 10px;
-  background-color: #4caf50;
+  background-color: #6cc0a8;;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
 
-  &:disabled {
-    background-color: #bbb;
-    cursor: not-allowed;
-  }
+
+}
+.btn:hover {
+  background-color: #2cafad;
 }
 
 .link {

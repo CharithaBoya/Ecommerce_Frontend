@@ -43,6 +43,7 @@ import { useAuthStore } from '@/stores/authStore'
 
 export default {
   name: 'ProductDetail',
+  
   data() {
     return {
       product: null,
@@ -56,7 +57,7 @@ export default {
   },
 
   created() {
-    const productId = this.$route.params.id
+    const productId = this.$route.params.productId
     this.fetchProduct(productId)
    this.fetchProductSellers(productId)
   },
@@ -73,16 +74,28 @@ export default {
     },
     async fetchProductSellers(productId) {
       try {
-        const response = await fetchSellersByProduct(productId)
-        this.sellers = response.data
+        const sellerIdsResponse = await getSellerIdsForProduct(productId)
+        const sellerIds = sellerIdsResponse.data
+
+        const sellerPromises = sellerIds.map(id => getSellerById(id))
+        const sellerResponses = await Promise.all(sellerPromises)
+
+        this.sellers = sellerResponses.map(res => res.data)
+
         if (this.sellers.length) {
           this.selectedSellerId = this.sellers[0].sellerId
           this.selectedSeller = this.sellers[0]
         }
       } catch (err) {
-        console.error('Error fetching sellers', err)
+        console.error('Error fetching sellers:', err)
       }
     },
+
+    updateSellerInfo() {
+      this.selectedSeller = this.sellers.find(s => s.sellerId === this.selectedSellerId)
+    },
+
+
     handleAddToCart() {
     if (!this.customerId || !this.product || !this.selectedSeller) return;
 

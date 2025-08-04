@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar">
-    <div class="navbar-logo">MyShop</div>
+    <div class="navbar-logo"><img src="https://ibb.co/SwPHHZqG"></div>
 
     <div class="navbar-toggle" @click="toggleMenu">
       ☰
@@ -104,7 +104,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #0a3d62;
+  background-color: #299274;
   color: white;
   padding: 1rem 2rem;
   position: sticky;
