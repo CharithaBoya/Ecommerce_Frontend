@@ -6,56 +6,40 @@
       ☰
     </div>
 
-<input
-  v-model="searchQuery"
-  @keyup.enter="searchProduct"
-  type="text"
-  class="searchBar"
-  placeholder="Search..."
-/>
+    <input v-model="searchQuery" @keyup.enter="searchProduct" type="text" class="searchBar" placeholder="Search..." />
 
 
-<ul :class="['navbar-links', { active: isMenuOpen }]">
-  <li>
-    <router-link
-      to="/"
-      class="nav-item"
-    >
-      Home
-    </router-link>
-  </li>
-  <li>
-    <router-link
-      to="/cart"
-      class="nav-item"
-    >
-      Cart 🛒
-    </router-link>
-  </li>
-</ul>
+    <ul :class="['navbar-links', { active: isMenuOpen }]">
+      <li>
+        <router-link to="/" class="nav-item">
+          Home
+        </router-link>
+      </li>
+      <li>
+        <router-link to="/cart" class="nav-item">
+          Cart 🛒
+        </router-link>
+      </li>
+    </ul>
 
 
-<div class="profile-container">
-  
-    <template v-if="!isLoggedIn">
-      <router-link to="/login" class="login-link">Login / Sign Up</router-link>
-    </template>
+    <div class="profile-container">
 
-    <template v-else>
-      <div class="profile-dropdown" @click="toggleDropdown">
-        <img
-          src="https://i.ibb.co/jvSTL1NB/happy.png"
-          alt="Profile"
-          class="profile-icon"
-        />
-        <div v-if="showDropdown" class="dropdown-menu">
-          <router-link to="/user-details">User Details</router-link>
-          <router-link to="/order-history">Order History</router-link>
-          <button @click="logout">Logout</button>
+      <template v-if="!isLoggedIn">
+        <router-link to="/login" class="login-link">Login / Sign Up</router-link>
+      </template>
+
+      <template v-else>
+        <div class="profile-dropdown" @click="toggleDropdown">
+          <img src="https://i.ibb.co/jvSTL1NB/happy.png" alt="Profile" class="profile-icon" />
+          <div v-if="showDropdown" class="dropdown-menu">
+            <router-link to="/user-details">User Details</router-link>
+            <router-link to="/order-history">Order History</router-link>
+            <button @click="logout">Logout</button>
+          </div>
         </div>
-      </div>
-    </template>
-  </div>
+      </template>
+    </div>
 
 
   </nav>
@@ -67,27 +51,27 @@ export default {
     return {
       isMenuOpen: false,
       showDropdown: false,
-    isLoggedIn: true,
-    searchQuery: ''
+      isLoggedIn: false,
+      searchQuery: ''
     };
   },
   methods: {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
     },
-      toggleDropdown() {
-    this.showDropdown = !this.showDropdown;
-  },
-  logout() {
-    this.isLoggedIn = false;
-    this.showDropdown = false;
+    toggleDropdown() {
+      this.showDropdown = !this.showDropdown;
+    },
+    logout() {
+      this.isLoggedIn = false;
+      this.showDropdown = false;
       this.$router.push('/');
-  },
+    },
     searchProduct() {
-    if (this.searchQuery.trim()) {
-      this.$router.push({ path: '/search', query: { q: this.searchQuery } });
+      if (this.searchQuery.trim()) {
+        this.$router.push({ path: '/search', query: { q: this.searchQuery } });
+      }
     }
-  }
 
 
   },
@@ -110,65 +94,71 @@ export default {
     font-size: 1.5rem;
     font-weight: bold;
   }
-  .searchBar{
+
+  .searchBar {
     width: 60%;
     border-radius: 15px;
     height: 30px;
   }
+
   .nav-item {
     text-decoration: none;
     font-weight: 600;
     color: #333;
     transition: color 0.3s;
   }
+
   .profile-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-  .profile-icon{
-    width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
   }
+
+  .profile-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
   .login-link {
-  text-decoration: none;
-  font-weight: 500;
-  color: #ffffff;
-}
+    text-decoration: none;
+    font-weight: 500;
+    color: #ffffff;
+  }
+
   .profile-dropdown {
-  position: relative;
-}
+    position: relative;
+  }
 
-.dropdown-menu {
-  position: absolute;
-  background: black;
-  border: 1px solid #ccc;
-  padding: 10px;
-  right: 0;
-  z-index: 999;
-  color: #ffffff;
-}
-.dropdown-menu a,
-.dropdown-menu button {
-  padding: 8px;
-  text-align: left;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: #333;
-}
+  .dropdown-menu {
+    position: absolute;
+    background: black;
+    border: 1px solid #ccc;
+    padding: 10px;
+    right: 0;
+    z-index: 999;
+    color: #ffffff;
+  }
 
-.dropdown-menu a:hover,
-.dropdown-menu button:hover {
-  background-color: #f5f5f5;
-}
+  .dropdown-menu a,
+  .dropdown-menu button {
+    padding: 8px;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+  }
+
+  .dropdown-menu a:hover,
+  .dropdown-menu button:hover {
+    background-color: #f5f5f5;
+  }
 
 
-  
+
 
   .navbar-links {
     display: flex;
