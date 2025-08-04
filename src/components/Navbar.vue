@@ -74,6 +74,10 @@ export default {
       searchQuery: ''
     };
   },
+  mounted() {
+    const token = localStorage.getItem('token');
+    this.isLoggedIn = !!token;
+  },
   methods: {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
@@ -82,6 +86,7 @@ export default {
       this.showDropdown = !this.showDropdown;
     },
     logout() {
+      localStorage.removeItem('token');
       this.isLoggedIn = false;
       this.showDropdown = false;
       this.$router.push('/');
@@ -96,6 +101,7 @@ export default {
     }
   }
 };
+
 </script>
 
 <style scoped>

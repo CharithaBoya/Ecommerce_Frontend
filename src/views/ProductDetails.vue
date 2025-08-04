@@ -3,18 +3,19 @@
     <div class="product-header">
       <img :src="product.imageUrl" alt="Product Image" class="product-image" />
       <div class="product-info">
-        <h2 class="product-title">{{ product.productName }} Iphone</h2>
+        <h2 class="product-title">{{ product.productName }}</h2>
           <p class="product-description">{{ product.productDescription }}</p>
 
-        <p class="category"><strong>Category:</strong> {{ product.productCategory }}</p>
+        <p class="category"><strong>Brand:</strong> {{ product.productBrand }}</p>
 
-        <p class="rating">Rating: {{ product.productRating }} ★</p>
+        <p class="rating">Rating: {{ selectedSeller?.productRating }} ★</p>
 
         <div class="seller-dropdown">
           <label for="sellerSelect"><strong>Choose Seller:</strong></label>
           <select id="sellerSelect" v-model="selectedSellerId" @change="updateSellerInfo">
             <option v-for="seller in sellers" :key="seller.sellerId" :value="seller.sellerId">
-                {{ seller.sellerName }} - ₹{{ seller.productPrice }} ({{ seller.productQuantity}} in stock)
+                {{ sellerNames[seller.sellerId] || 'Loading...'}} - ₹{{ seller.productPrice }} ({{ seller.productQuantity}} in stock)
+
         </option>
           </select>
         </div>
@@ -36,7 +37,7 @@
 </template>
 
 <script>
-import { fetchProductById, fetchSellersByProduct } from '../services/apiServices'
+import { fetchProductById, getSellerById, getSellerIdsForProduct ,getSellerNameById} from '../services/apiServices'
 import { mapActions,mapGetters } from 'pinia'
 import { useCartStore } from '../stores/cartStore'
 import { useAuthStore } from '@/stores/authStore'
@@ -48,6 +49,7 @@ export default {
     return {
       product: null,
       sellers: [],
+      sellerNames: {},
       selectedSellerId: null,
       selectedSeller: null
     }
@@ -72,16 +74,27 @@ export default {
         console.error('Error fetching product', err)
       }
     },
+    
     async fetchProductSellers(productId) {
       try {
-        const sellerIdsResponse = await getSellerIdsForProduct(productId)
-        const sellerIds = sellerIdsResponse.data
+        const { data: sellerIds } = await getSellerIdsForProduct(productId)
 
-        const sellerPromises = sellerIds.map(id => getSellerById(id))
-        const sellerResponses = await Promise.all(sellerPromises)
+        const sellerPromises = sellerIds.map((sellerId) =>
+          getSellerById(productId, sellerId)
+        )
 
-        this.sellers = sellerResponses.map(res => res.data)
+        const responses = await Promise.all(sellerPromises)
+        this.sellers = responses.map(res => res.data)
+        const namePromises = this.sellers.map(seller =>
+      getSellerNameById(seller.sellerId)
+    );
 
+    const nameResponses = await Promise.all(namePromises);
+
+    nameResponses.forEach((res, index) => {
+      const sellerId = this.sellers[index].sellerId;
+      this.sellerNames[sellerId] = res.sellerName || "Unknown";
+    });
         if (this.sellers.length) {
           this.selectedSellerId = this.sellers[0].sellerId
           this.selectedSeller = this.sellers[0]
@@ -91,8 +104,11 @@ export default {
       }
     },
 
+
     updateSellerInfo() {
-      this.selectedSeller = this.sellers.find(s => s.sellerId === this.selectedSellerId)
+      this.selectedSeller = this.sellers.find(
+        s => s.sellerId === this.selectedSellerId
+      )
     },
 
 
