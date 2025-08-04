@@ -56,11 +56,11 @@ export default {
         v-for="product in products"
         :key="product.productId"
         :product="product"
+        @click="goToProductDetails"
       />
     </div>
   </div>
 </template>
-
 
 
 <style scoped>

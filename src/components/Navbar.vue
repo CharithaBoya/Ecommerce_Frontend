@@ -39,7 +39,7 @@
 
     <div class="profile-container">
 
-      <template v-if="!isLoggedIn">
+      <template v-if="!auth.isLoggedIn">
         <router-link to="/login" class="login-link">Login /<br/> Sign Up</router-link>
       </template>
 
@@ -70,15 +70,19 @@
   </nav>
 </template>
 
-<script>
+<!-- <script>
 export default {
   data() {
     return {
       isMenuOpen: false,
       showDropdown: false,
-      isLoggedIn: true,
       searchQuery: ''
     };
+  },
+  computed: {
+    isLoggedIn() {
+      return !!localStorage.getItem('jwt');
+    }
   },
   methods: {
     toggleMenu() {
@@ -88,7 +92,7 @@ export default {
       this.showDropdown = !this.showDropdown;
     },
     logout() {
-      this.isLoggedIn = false;
+      localStorage.removeItem('token');
       this.showDropdown = false;
       this.$router.push('/');
     },
@@ -102,7 +106,51 @@ export default {
     }
   }
 };
+</script> -->
+<script setup>
+// const auth = useAuthStore();
+
+import { useAuthStore } from '@/stores/authStore';
+import { onMounted, ref } from 'vue';
+
+const auth = useAuthStore();
+const isMenuOpen = ref(false);
+const showDropdown = ref(false);
+const searchQuery = ref("");
+
+// Rehydrate auth state from localStorage (only if store state was lost)
+onMounted(() => {
+  const token = localStorage.getItem("jwt");
+  if (token && !auth.isLoggedIn) {
+    auth.login(token); // Update store
+  }
+});
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
+
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value;
+};
+
+const logout = () => {
+  auth.logout();
+  showDropdown.value = false;
+  location.reload(); // Or use router to redirect
+};
+
+const searchProduct = () => {
+  if (searchQuery.value.trim()) {
+    window.location.href = `/search?q=${encodeURIComponent(searchQuery.value)}`;
+  }
+};
+
+const clearSearch = () => {
+  searchQuery.value = "";
+};
 </script>
+
 
 <style scoped>
 .navbar {

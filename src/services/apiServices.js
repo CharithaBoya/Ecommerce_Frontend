@@ -10,10 +10,28 @@ export const fetchProductById = (productId) => {
   return api.get(`product/api/getProductById?productId=${productId}`)
 }
 
-export const fetchSellersByProduct = (productId) => {
-  return api.get(`/products/${productId}/sellers`)
-}
+export const getSellerIdsForProduct = (productId) => {
+  return axios.get(`http://10.20.4.3:8080/sellerproduct/api/getSellerIdsForProduct`, {
+    params: { productId }
+  });
+};
 
+export const getSellerById = (productId, sellerId) => {
+  return axios.get(`http://10.20.4.3:8080/sellerproduct/api/getDetails/SellerIdAndProductId`, {
+    params: { productId, sellerId }
+  });
+};
+export const getSellerNameById = async (sellerId) => {
+  try {
+    const response = await axios.get(`http://10.20.4.3:8383/seller/api/getSellerById`, {
+      params: { sellerId }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching seller by ID:", error);
+    throw error;
+  }
+};
 
 export const fetchAllProducts = () => {
   return api.get('/products')
@@ -27,7 +45,6 @@ export const fetchMerchants = () => {
   return api.get('/merchants')
 }
 
-// Cart
 export const postCartItem = (payload) => {
   return api.post('http://10.20.3.43:8081/api/cart/add', payload);
 };

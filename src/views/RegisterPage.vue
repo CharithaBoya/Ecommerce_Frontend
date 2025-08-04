@@ -63,7 +63,7 @@ export default {
           address: this.address
         }
 
-        const response = await axios.post('http://localhost:8080/auth/register', payload)
+        const response = await axios.post('http://10.20.6.241:8080/auth/register', payload)
         alert(response.data)
         this.$router.push('/login')
       } catch (error) {
