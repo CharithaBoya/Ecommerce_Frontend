@@ -1,6 +1,6 @@
-<!-- src/components/ProductCard.vue -->
 <template>
   <div class="product-card" @click="goToProduct">
+    
     <img :src="product.productImageUrl" alt="Product image" />
     <h4>{{ product.productName }}</h4>
     <p>₹{{ product.productPrice }}</p>
@@ -29,6 +29,8 @@ export default {
   padding: 1rem;
   text-align: center;
   cursor: pointer;
+
+
   box-shadow: 0 1px 5px rgba(0,0,0,0.1);
   transition: transform 0.2s;
 }

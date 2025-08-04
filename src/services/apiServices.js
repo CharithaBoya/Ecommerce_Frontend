@@ -7,14 +7,14 @@ const api = axios.create({
 
 
 export const fetchProductById = (productId) => {
-  return api.get(`/products/${productId}`)
+  return api.get(`product/api/getProductById?productId=${productId}`)
 }
 
 export const fetchSellersByProduct = (productId) => {
   return api.get(`/products/${productId}/sellers`)
 }
 
-// Add more APIs for other pages
+
 export const fetchAllProducts = () => {
   return api.get('/products')
 }

@@ -2,9 +2,7 @@
   <nav class="navbar">
     <div class="navbar-logo">MyShop</div>
 
-    <div class="navbar-toggle" @click="toggleMenu">
-      ☰
-    </div>
+   
 
     <div class="search-wrapper">
         <img
@@ -20,8 +18,6 @@
         class="searchBar"
         placeholder="     Search..."
       />
-
-
 
           <img
       src="https://i.ibb.co/VYQyLqdV/close.png"
@@ -42,8 +38,9 @@
     </ul>
 
     <div class="profile-container">
+
       <template v-if="!isLoggedIn">
-        <router-link to="/login" class="login-link">Login / Sign Up</router-link>
+        <router-link to="/login" class="login-link">Login /<br/> Sign Up</router-link>
       </template>
 
       <template v-else>
@@ -60,6 +57,15 @@
           </div>
         </div>
       </template>
+
+  <div class="navbar-toggle" @click="toggleMenu">
+  ☰
+  <div v-if="isMenuOpen" class="toggle-dropdown">
+    <router-link to="/" class="dropdown-link" @click="toggleMenu">Home</router-link>
+    <router-link to="/cart" class="dropdown-link" @click="toggleMenu">Cart 🛒</router-link>
+  </div>
+</div>
+
     </div>
   </nav>
 </template>
@@ -70,7 +76,7 @@ export default {
     return {
       isMenuOpen: false,
       showDropdown: false,
-      isLoggedIn: false,
+      isLoggedIn: true,
       searchQuery: ''
     };
   },
@@ -101,37 +107,43 @@ export default {
 <style scoped>
 .navbar {
   width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   background-color: #0a3d62;
   color: white;
-  padding: 1rem 2rem;
+  padding: 0.8rem 1.2rem;
   position: sticky;
-  box-sizing: border-box;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
+}
 
-  .navbar-logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
+.navbar-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-right: 1rem;
+}
 
-  .search-wrapper {
-    display: flex;
-    align-items: center;
-    position: relative;
-    width: 60%;
-  }
+.search-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin: 0 1rem;
+}
 
-  .searchBar {
-    width: 100%;
-    border-radius: 20px;
-    height: 40px;
-    padding: 0 2.5rem 0 0.8rem;
-  }
+.searchBar {
+  width: 100%;
+  border-radius: 20px;
+  height: 40px;
+  padding: 0 2.2rem;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+}
 
-  
-  .icon {
+.icon {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -140,115 +152,118 @@ export default {
   cursor: pointer;
 }
 
-
 .search-icon {
-  left: 8px;
-  padding-right: 5px;
+  left: 12px;
 }
 
+.clear-icon {
+  right: 12px;
+}
 
-  .clear-icon {
-    right: 8px;
+.navbar-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+  margin-left: auto;
+}
+
+.navbar-links a {
+  text-decoration: none;
+  font-weight: 600;
+  color: white;
+  transition: color 0.3s;
+}
+
+.profile-container {
+  margin-left: 1rem;
+  position: relative;
+}
+
+.login-link {
+  text-decoration: none;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.profile-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.profile-dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  background: black;
+  border: 1px solid #ccc;
+  padding: 10px;
+  right: 0;
+  z-index: 999;
+  color: white;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+  padding: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: white;
+}
+
+.navbar-toggle {
+  display: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: white;
+  margin-left: 1rem;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .navbar {
+    flex-wrap: wrap;
   }
 
-  .nav-item {
-    text-decoration: none;
-    font-weight: 600;
-    color: #333;
-    transition: color 0.3s;
+  .search-wrapper {
+    order: 2;
+    width: 100%;
+    margin-top: 1rem;
   }
 
   .profile-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  .profile-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-
-  .login-link {
-    text-decoration: none;
-    font-weight: 500;
-    color: #ffffff;
-  }
-
-  .profile-dropdown {
-    position: relative;
-  }
-
-  .dropdown-menu {
-    position: absolute;
-    background: black;
-    border: 1px solid #ccc;
-    padding: 10px;
-    right: 0;
-    z-index: 999;
-    color: #ffffff;
-  }
-
-  .dropdown-menu a,
-  .dropdown-menu button {
-    padding: 8px;
-    text-align: left;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    color: #ffffff;
-  }
-
-  .navbar-links {
-    display: flex;
-    gap: 1.5rem;
-    list-style: none;
-
-    a {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.3s ease;
-
-      &:hover {
-        color: #f39c12;
-      }
-    }
+    order: 3;
+    margin-top: 0.5rem;
+    margin-left: 0;
   }
 
   .navbar-toggle {
-    display: none;
-    font-size: 1.8rem;
-    cursor: pointer;
+    display: block;
+    order: 4;
+    margin-top: 0.5rem;
   }
 
-  @media (max-width: 768px) {
-    .navbar-links {
-      flex-direction: column;
-      position: absolute;
-      top: 60px;
-      right: 0;
-      background-color: #0a3d62;
-      width: 100%;
-      display: none;
-      padding: 1rem 0;
+  .navbar-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 1rem;
+  }
 
-      &.active {
-        display: flex;
-      }
-    }
+  .navbar-links.active {
+    display: flex;
+  }
 
-    .navbar-toggle {
-      display: block;
-    }
-
-    .search-wrapper {
-      width: 100%;
-      margin-top: 1rem;
-    }
+  .navbar-links li {
+    padding: 0.5rem 0;
+    text-align: center;
   }
 }
+
+
 </style>
