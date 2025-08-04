@@ -116,6 +116,7 @@ export default {
     if (!this.customerId || !this.product || !this.selectedSeller) return;
 
       const cartItem = {
+        // customerId: this.customerId,
         productId: this.product.productId,
         productName: this.product.productName,
         quantity: 1,
@@ -123,8 +124,15 @@ export default {
         sellerId: this.selectedSeller.sellerId
       };
 
-      this.addToCart(cartItem);
-      this.$router.push('/cart');
+      this.addToCart(cartItem)
+  .then(() => {
+    alert("Item added to cart!");
+    this.$router.push('/cart');
+  })
+  .catch((err) => {
+    console.error("Add to cart failed", err);
+    alert("Something went wrong.");
+  });
     }
   },
     

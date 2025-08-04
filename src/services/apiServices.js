@@ -46,27 +46,27 @@ export const fetchMerchants = () => {
 }
 
 export const postCartItem = (payload) => {
-  return api.post('http://10.20.3.43:8081/api/cart/add', payload);
+  return axios.post('http://10.20.3.43:8081/api/cart/add', payload);
 };
 
 
 export const getCartItems = (customerId) => {
-  return api.get(`http://10.20.3.43:8081/api/cart/${customerId}`);
+  return axios.get(`http://10.20.3.43:8081/api/cart/${customerId}`);
 };
 
 
 export const updateCartQuantity = (payload) => {
-  return api.put('/cart/update', payload);
+  return axios.put('/cart/update', payload);
 };
 
 
 export const deleteCartItem = (customerId, productId) => {
-  return api.delete(`/cart/${customerId}/remove/${productId}`);
+  return axios.delete(`/cart/${customerId}/remove/${productId}`);
 };
 
 
 export const clearCartItems = (customerId) => {
-  return api.delete(`/cart/${customerId}/clear`);
+  return axios.delete(`/cart/${customerId}/clear`);
 };
 
 

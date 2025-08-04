@@ -9,9 +9,9 @@ export const useCartStore = defineStore('cart', {
 
   actions: {
     async fetchCartItems() {
-      const auth = useAuthStore();
-      const customerId = auth.customerId;
-      if (!customerId) return;
+    //   const auth = useAuthStore();
+    //   const customerId = auth.customerId;
+    //   if (!customerId) return;
 
       const res = await getCartItems(customerId);
       this.items = res.data
@@ -23,12 +23,12 @@ export const useCartStore = defineStore('cart', {
     },
 
     async removeFromCart(productId) {
-      const auth = useAuthStore();
-      const customerId = auth.customerId;
-      if (!customerId) return;
+    //   const auth = useAuthStore();
+    //   const customerId = auth.customerId;
+    //   if (!customerId) return;
 
       await deleteCartItem(customerId, productId);
-      await this.fetchCart();
+      await this.fetchCartItems();
     },
     async updateQty(productId, qty) {
     await apiUpdateCart(productId, qty)
