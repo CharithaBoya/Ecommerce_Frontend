@@ -15,6 +15,7 @@ import OrderCard from '../components/OrderCard.vue'
 import { mapGetters } from 'pinia'
 import { useOrderStore } from '../stores/orderStore'
 
+
 export default {
   name: "OrderHistory",
   components: {
