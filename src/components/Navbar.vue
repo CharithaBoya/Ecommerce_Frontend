@@ -2,9 +2,7 @@
   <nav class="navbar">
     <div class="navbar-logo"><img src="https://i.ibb.co/pjxNNkC5/Click-NCart-logo-transparent.png"></div>
 
-    <div class="navbar-toggle" @click="toggleMenu">
-      ☰
-    </div>
+   
 
     <div class="search-wrapper">
         <img
@@ -20,8 +18,6 @@
         class="searchBar"
         placeholder="     Search..."
       />
-
-
 
           <img
       src="https://i.ibb.co/VYQyLqdV/close.png"
@@ -42,8 +38,9 @@
     </ul>
 
     <div class="profile-container">
-      <template v-if="!isLoggedIn">
-        <router-link to="/login" class="login-link">Login / Sign Up</router-link>
+
+      <template v-if="!auth.isLoggedIn">
+        <router-link to="/login" class="login-link">Login /<br/> Sign Up</router-link>
       </template>
 
       <template v-else>
@@ -60,19 +57,32 @@
           </div>
         </div>
       </template>
+
+  <div class="navbar-toggle" @click="toggleMenu">
+  ☰
+  <div v-if="isMenuOpen" class="toggle-dropdown">
+    <router-link to="/" class="dropdown-link" @click="toggleMenu">Home</router-link>
+    <router-link to="/cart" class="dropdown-link" @click="toggleMenu">Cart 🛒</router-link>
+  </div>
+</div>
+
     </div>
   </nav>
 </template>
 
-<script>
+<!-- <script>
 export default {
   data() {
     return {
       isMenuOpen: false,
       showDropdown: false,
-      isLoggedIn: false,
       searchQuery: ''
     };
+  },
+  computed: {
+    isLoggedIn() {
+      return !!localStorage.getItem('jwt');
+    }
   },
   methods: {
     toggleMenu() {
@@ -83,6 +93,7 @@ export default {
     },
     logout() {
       this.isLoggedIn = false;
+      localStorage.removeItem('token');
       this.showDropdown = false;
       this.$router.push('/');
     },
@@ -96,21 +107,72 @@ export default {
     }
   }
 };
+</script> -->
+<script setup>
+// const auth = useAuthStore();
 
+import { useAuthStore } from '@/stores/authStore';
+import { onMounted, ref } from 'vue';
+
+const auth = useAuthStore();
+const isMenuOpen = ref(false);
+const showDropdown = ref(false);
+const searchQuery = ref("");
+
+// Rehydrate auth state from localStorage (only if store state was lost)
+onMounted(() => {
+  const token = localStorage.getItem("jwt");
+  if (token && !auth.isLoggedIn) {
+    auth.login(token); // Update store
+  }
+});
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
+
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value;
+};
+
+const logout = () => {
+  auth.logout();
+  showDropdown.value = false;
+  location.reload(); // Or use router to redirect
+};
+
+const searchProduct = () => {
+  if (searchQuery.value.trim()) {
+    window.location.href = `/search?q=${encodeURIComponent(searchQuery.value)}`;
+  }
+};
+
+const clearSearch = () => {
+  searchQuery.value = "";
+};
 </script>
 
+
 <style scoped>
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
 .navbar {
   width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #299274;
+  background-color: #549e9d;
   color: white;
-  padding: 1rem 2rem;
+  padding: 0.6rem 1rem;
   position: sticky;
-  box-sizing: border-box;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
   flex-wrap: wrap;
+  justify-content: space-between;
+}
 
   .navbar-logo img {
   height: 50px;
@@ -119,139 +181,185 @@ export default {
   cursor: pointer;
 }
 
-  .search-wrapper {
-    display: flex;
-    align-items: center;
-    position: relative;
-    width: 60%;
-  }
 
-  .searchBar {
-    width: 100%;
-    border-radius: 20px;
-    height: 40px;
-    padding: 0 2.5rem 0 0.8rem;
-  }
+.search-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin: 0 1rem;
+  min-width: 180px;
+}
 
-  
-  .icon {
+.searchBar {
+  width: 100%;
+  border-radius: 20px;
+  height: 34px;
+  padding: 0 2rem;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.icon {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   cursor: pointer;
 }
 
-
 .search-icon {
-  left: 8px;
-  padding-right: 5px;
+  left: 12px;
+}
+
+.clear-icon {
+  right: 12px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
 }
 
 
-  .clear-icon {
-    right: 8px;
+.navbar-links a {
+  text-decoration: none;
+  font-weight: 600;
+  color: white;
+  transition: color 0.3s;
+}
+
+.profile-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-left: 0.5rem;
+  white-space: nowrap;
+}
+
+.login-link {
+  text-decoration: none;
+  font-weight: 500;
+  color: #ffffff;
+  font-size: 0.9rem;
+  padding: 0 0.4rem;
+}
+
+.profile-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.profile-dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%; /* directly below the profile icon */
+  right: 0;
+  background: #111;
+  border: 1px solid #ccc;
+  padding: 10px;
+  z-index: 9999;
+  color: white;
+  border-radius: 5px;
+  width: 150px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+   max-width: 90vw;
+  word-wrap: break-word;
+  overflow-x: auto
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 5px 10px;
+  color: white;
+  text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+  background: #444;
+}
+
+
+.navbar-toggle {
+  display: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  position: relative;
+  color: white;
+}
+
+.toggle-dropdown {
+  position: absolute;
+  background: #0a3d62;
+  top: 40px;
+  right: 0;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+}
+
+.toggle-dropdown .dropdown-link {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 0;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .nav-item {
-    text-decoration: none;
-    font-weight: 600;
-    color: #333;
-    transition: color 0.3s;
+  .navbar-logo {
+    align-self: flex-start;
   }
 
-  .profile-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  .profile-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-
-  .login-link {
-    text-decoration: none;
-    font-weight: 500;
-    color: #ffffff;
-  }
-
-  .profile-dropdown {
-    position: relative;
-  }
-
-  .dropdown-menu {
-    position: absolute;
-    background: black;
-    border: 1px solid #ccc;
-    padding: 10px;
-    right: 0;
-    z-index: 999;
-    color: #ffffff;
-  }
-
-  .dropdown-menu a,
-  .dropdown-menu button {
-    padding: 8px;
-    text-align: left;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    color: #ffffff;
+  .search-wrapper {
+    width: 50%;
+    margin: 0.5rem 0;
+    order: 2;
   }
 
   .navbar-links {
+    display: none;
+  }
+
+  .navbar-links.active {
     display: flex;
-    gap: 1.5rem;
-    list-style: none;
-
-    a {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.3s ease;
-
-      &:hover {
-        color: #f39c12;
-      }
-    }
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
   }
 
   .navbar-toggle {
-    display: none;
-    font-size: 1.8rem;
-    cursor: pointer;
+    display: block;
+    align-self: flex-end;
+    order: 4;
+    margin-top: 0.5rem;
   }
 
-  @media (max-width: 768px) {
-    .navbar-links {
-      flex-direction: column;
-      position: absolute;
-      top: 60px;
-      right: 0;
-      background-color: #0a3d62;
-      width: 100%;
-      display: none;
-      padding: 1rem 0;
+  .profile-container {
+    order: 3;
+    margin-top: 0.5rem;
+    justify-content: flex-end;
+  }
 
-      &.active {
-        display: flex;
-      }
-    }
-
-    .navbar-toggle {
-      display: block;
-    }
-
-    .search-wrapper {
-      width: 100%;
-      margin-top: 1rem;
-    }
+  .login-link {
+    white-space: nowrap;
   }
 }
 </style>

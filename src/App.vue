@@ -16,17 +16,14 @@ export default {
 </template>
 
 <style>
-body {
+html, body, #app {
   margin: 0;
   padding: 0;
+  height: 100%;
+  overflow-x: hidden;
   font-family: 'Roboto', sans-serif;
   background: linear-gradient(to bottom, #6cc0a8 0%, #ffffff 100%);
-  min-height: 100vh;
 }
-#app {
-  width: 100%;
-  display: block;
 
-}
 
 </style>

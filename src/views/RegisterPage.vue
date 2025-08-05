@@ -63,7 +63,7 @@ export default {
           address: this.address
         }
 
-        const response = await axios.post('http://10.20.6.241:8080/auth/register', payload)
+        const response = await axios.post('http://10.20.3.40:8080/auth/register', payload)
         alert(response.data)
         this.$router.push('/login')
       } catch (error) {
@@ -85,7 +85,7 @@ export default {
   padding: 24px;
   border: 1px solid #eee;
   border-radius: 10px;
-  background:#bfa5a5;
+  background:#bfe5e4;
 }
 
 .title {

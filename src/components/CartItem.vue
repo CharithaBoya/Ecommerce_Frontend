@@ -1,7 +1,7 @@
 <template>
   <div class="cart-item">
-    <h3>{{ item.productName }}</h3>
-    <p>Price: ₹{{ item.price }}</p>
+    <h3 class="heading">{{ item.productName }}</h3>
+    <p>Price: ₹{{ item.productPrice }}</p>
     <p>Quantity:
       <input type="number" v-model.number="localQty" min="1" @change="updateQty" />
     </p>
@@ -39,9 +39,17 @@
 
 
 <style scoped>
-.cart-item {
+.cart-item { 
   border: 1px solid #ccc;
+  background-color: rgb(216, 234, 230);
+  border-radius: 4%;
   padding: 1rem;
-  margin: 1rem 0;
+  margin: 1rem;
+.heading{
+   font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+  text-align: center;
+  }
 }
 </style>

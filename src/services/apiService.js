@@ -31,8 +31,17 @@ export const getProductsByCategory = async (categoryId) => {
     throw error;
   }
 };
-
+export const getAllSellerProducts = () => {
+  return api.get(`${BASE_URL}/sellerproduct/api/getAllSellerProducts`);
+};
 // Search products by name
 export const searchProductsByName = (query) => {
   return api.get(`/searchbyname?query=${query}`);
 };
+
+
+export const getProductById = (productId) => {
+  return api.get(`http://10.20.4.3:8080/product/api/getProductById?productId=${productId}`);
+};
+
+

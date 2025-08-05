@@ -1,6 +1,9 @@
 <template>
   <div class="cart-page">
-    <h1>Your Cart</h1>
+    <h1 class="heading">Your Cart</h1>
+
+    <div v-if="cartItems.length === 0">Your cart is empty.</div>
+
     <CartItem
       v-for="item in cartItems"
       :key="item.productId"
@@ -8,60 +11,121 @@
       @update-qty="updateQuantity"
       @remove="removeItem"
     />
-    <div v-if="cartItems.length === 0">Your cart is empty.</div>
-  </div>
-    <button @click="checkout">Checkout</button>
 
+    <div class="total-section" v-if="cartItems.length > 0">
+      <p>Total: ₹{{ totalAmount }}</p>
+      <button @click="checkout">Checkout</button>
+    </div>
+  </div>
 </template>
 
 <script>
-import { useCartStore } from '../stores/cartStore'
 import CartItem from '../components/CartItem.vue'
-import { useOrderStore } from '@/stores/orderStore'
-import { mapActions, mapState } from 'pinia'
+import { useAuthStore } from '../stores/authStore'
+import { getCartItems, placeOrder } from '@/services/apiServices'
 
 export default {
   name: 'CartPage',
   components: {
     CartItem
   },
+  data() {
+    return {
+      cartItems: []
+    }
+  },
   computed: {
-    ...mapState(useCartStore, ['items']),
-    cartItems() {
-      return this.items
-    },
     totalAmount() {
-      return this.items.reduce(function (sum, item) {
-        return sum + item.price * (item.quantity || 1)
+      return this.cartItems.reduce((sum, item) => {
+        return sum + (item.productPrice || 0) * (item.quantity || 1)
       }, 0)
     }
   },
   methods: {
-    ...mapActions(useCartStore, ['removeFromCart', 'updateCartQuantity', 'clearCart','addToCart']),
-    ...mapActions(useOrderStore, ['placeOrder']),
+    async fetchCartData() {
+      try {
+        const auth = useAuthStore()
+        const customerId = auth.customer?.customerId
 
-    removeItem(productId) {
-      this.removeFromCart(productId)
+        if (!customerId) {
+          console.warn('No customer ID found')
+          return
+        }
+
+        const response = await getCartItems(customerId)
+        console.log('Fetched cart items:', response.data)
+        this.cartItems = response.data.items
+      } catch (error) {
+        console.error('Failed to fetch cart items:', error)
+      }
     },
 
     updateQuantity({ productId, quantity }) {
-      this.updateCartQuantity({ productId, quantity })
+      const item = this.cartItems.find(i => i.productId === productId)
+      if (item) {
+        item.quantity = quantity
+      }
     },
 
-    checkout() {
-      if (this.items.length > 0) {
-        this.placeOrder(this.items)
-        this.clearCart()
+    removeItem(productId) {
+      this.cartItems = this.cartItems.filter(item => item.productId !== productId)
+    },
+
+    async checkout() {
+      const auth = useAuthStore()
+      const customerId = auth.customer?.customerId
+      console.log(customerId)
+
+      if (!customerId) {
+        alert('Customer not logged in.')
+        return
+      }
+
+      if (this.cartItems.length === 0) {
+        alert('Cart is empty.')
+        return
+      }
+
+      try {
+        await placeOrder(customerId)
         this.$router.push('/checkout-success')
+      } catch (err) {
+        console.error('Checkout failed:', err)
+        alert('Failed to place order.')
       }
     }
+  },
+  mounted() {
+    this.fetchCartData()
   }
-
 }
 </script>
 
 <style scoped>
 .cart-page {
+  max-width: 880px;
   padding: 2rem;
+  margin: 2rem auto;
+}
+
+.heading {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+  text-align: center;
+}
+
+.total-section {
+  margin-top: 2rem;
+  text-align: right;
+}
+
+button {
+  padding: 0.6rem 1.2rem;
+  background-color: #6cc0a8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
 </style>

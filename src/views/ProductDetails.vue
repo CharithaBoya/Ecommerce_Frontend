@@ -1,149 +1,160 @@
 <template>
-<div class="product-details-container">
+  <div class="product-details-container">
     <div class="product-header">
-      <img :src="product.imageUrl" alt="Product Image" class="product-image" />
+      <img :src="product.productImageUrl" alt="Product Image" class="product-image" />
       <div class="product-info">
         <h2 class="product-title">{{ product.productName }}</h2>
-          <p class="product-description">{{ product.productDescription }}</p>
-
+        <p class="product-description">{{ product.productDescription }}</p>
         <p class="category"><strong>Brand:</strong> {{ product.productBrand }}</p>
-
-        <p class="rating">Rating: {{ selectedSeller?.productRating }} ★</p>
+        <p class="rating">Rating: {{ selectedSeller && selectedSeller.productRating }} ★</p>
 
         <div class="seller-dropdown">
           <label for="sellerSelect"><strong>Choose Seller:</strong></label>
           <select id="sellerSelect" v-model="selectedSellerId" @change="updateSellerInfo">
             <option v-for="seller in sellers" :key="seller.sellerId" :value="seller.sellerId">
-                {{ sellerNames[seller.sellerId] || 'Loading...'}} - ₹{{ seller.productPrice }} ({{ seller.productQuantity}} in stock)
-
-        </option>
+              {{ sellerNames[seller.sellerId] || 'Loading...' }} - ₹{{ seller.productPrice }} ({{ seller.productQuantity }} in stock)
+            </option>
           </select>
         </div>
 
         <div class="price">
           Selected Price: ₹
-          {{
-            selectedSeller
-              ? selectedSeller.productPrice
-              : 'Select a seller'
-          }}
+          {{ selectedSeller ? selectedSeller.productPrice : 'Select a seller' }}
         </div>
 
-         <button @click="handleAddToCart">Add to Cart</button>
-
+        <button @click="handleAddToCart">Add to Cart</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { fetchProductById, getSellerById, getSellerIdsForProduct ,getSellerNameById} from '../services/apiServices'
-import { mapActions,mapGetters } from 'pinia'
-import { useCartStore } from '../stores/cartStore'
-import { useAuthStore } from '@/stores/authStore'
+import {
+  fetchProductById,
+  getSellerById,
+  getSellerIdsForProduct,
+  getSellerNameById
+} from '../services/apiServices';
+
+import { useAuthStore } from '@/stores/authStore';
+import { useCartStore } from '@/stores/cartStore';
+import { mapState, mapActions } from 'pinia';
 
 export default {
   name: 'ProductDetail',
-  
+
   data() {
     return {
       product: null,
       sellers: [],
       sellerNames: {},
       selectedSellerId: null,
-      selectedSeller: null
-    }
+      selectedSeller: null,
+    };
   },
-    computed: {
-    ...mapGetters(useAuthStore, ['customerId'])
+
+  computed: {
+    ...mapState(useAuthStore, ['isLoggedIn', 'customer']),
+
+    customerId() {
+      return this.customer?.customerId;
+    }
   },
 
   created() {
-    const productId = this.$route.params.productId
-    this.fetchProduct(productId)
-   this.fetchProductSellers(productId)
+    const productId = this.$route.params.productId;
+    this.fetchProduct(productId);
+    this.fetchProductSellers(productId);
   },
+
   methods: {
-     ...mapActions(useCartStore, ['addToCart']),
-     
+    ...mapActions(useCartStore, ['addToCart']),
+
     async fetchProduct(productId) {
       try {
-        const response = await fetchProductById(productId)
-        this.product = response.data
+        const response = await fetchProductById(productId);
+        this.product = response.data;
+        console.log(this.product);
       } catch (err) {
-        console.error('Error fetching product', err)
+        console.error('Error fetching product:', err);
       }
     },
-    
+
     async fetchProductSellers(productId) {
       try {
-        const { data: sellerIds } = await getSellerIdsForProduct(productId)
-
-        const sellerPromises = sellerIds.map((sellerId) =>
+        const { data: sellerIds } = await getSellerIdsForProduct(productId);
+        const sellerPromises = sellerIds.map(sellerId =>
           getSellerById(productId, sellerId)
-        )
+        );
 
-        const responses = await Promise.all(sellerPromises)
-        this.sellers = responses.map(res => res.data)
+        const responses = await Promise.all(sellerPromises);
+        this.sellers = responses.map(res => res.data);
+
         const namePromises = this.sellers.map(seller =>
-      getSellerNameById(seller.sellerId)
-    );
+          getSellerNameById(seller.sellerId)
+        );
 
-    const nameResponses = await Promise.all(namePromises);
+        const nameResponses = await Promise.all(namePromises);
 
-    nameResponses.forEach((res, index) => {
-      const sellerId = this.sellers[index].sellerId;
-      this.sellerNames[sellerId] = res.sellerName || "Unknown";
-    });
+        nameResponses.forEach((res, index) => {
+          const sellerId = this.sellers[index].sellerId;
+          this.sellerNames[sellerId] = res.sellerName || 'Unknown';
+        });
+
         if (this.sellers.length) {
-          this.selectedSellerId = this.sellers[0].sellerId
-          this.selectedSeller = this.sellers[0]
+          this.selectedSellerId = this.sellers[0].sellerId;
+          this.selectedSeller = this.sellers[0];
         }
       } catch (err) {
-        console.error('Error fetching sellers:', err)
+        console.error('Error fetching sellers:', err);
       }
     },
-
 
     updateSellerInfo() {
       this.selectedSeller = this.sellers.find(
         s => s.sellerId === this.selectedSellerId
-      )
+      );
     },
 
+    async handleAddToCart() {
+      console.log("Logged In:", this.isLoggedIn);
+      console.log("Customer:", this.customer);
+      console.log("Customer ID:", this.customerId);
 
-    handleAddToCart() {
-    if (!this.customerId || !this.product || !this.selectedSeller) return;
+      if (!this.isLoggedIn || !this.customerId) {
+        alert("Please log in to add items to your cart.");
+        this.$router.push('/login');
+        return;
+      }
+
+      if (!this.product || !this.selectedSeller) {
+        alert("Product or seller not selected.");
+        return;
+      }
 
       const cartItem = {
-        // customerId: this.customerId,
-        productId: this.product.productId,
+        customerId: this.customer.customerId,
+        customerEmail:this.customer.customerEmail,
+        productId: this.$route.params.productId,
         productName: this.product.productName,
         quantity: 1,
         productPrice: this.selectedSeller.productPrice,
-        sellerId: this.selectedSeller.sellerId
+        sellerId: this.selectedSeller.sellerId,
       };
-
-      this.addToCart(cartItem)
-  .then(() => {
-    alert("Item added to cart!");
-    this.$router.push('/cart');
-  })
-  .catch((err) => {
-    console.error("Add to cart failed", err);
-    alert("Something went wrong.");
-  });
+      console.log(cartItem);
+      try {
+        await this.addToCart(cartItem);
+        alert('Item added to cart!');
+        this.$router.push('/cart');
+      } catch (err) {
+        console.error('Add to cart failed:', err);
+        // alert('Something went wrong while adding to cart.');
+      }
     }
-  },
-    
-  
-    updateSellerInfo() {
-      this.selectedSeller = this.sellers.find(s => s.sellerId === this.selectedSellerId)
-    },
-}
-  
-
+  }
+};
 </script>
+
 
 <style scoped >
 .product-details-container {

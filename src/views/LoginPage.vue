@@ -1,5 +1,8 @@
 <script>
 import axios from 'axios';
+import { useAuthStore } from '@/stores/authStore'; 
+
+
  
 export default {
   name: 'LoginForm',
@@ -17,7 +20,7 @@ export default {
   },
   methods: {
     handleLogin() {
-      axios.post("http://10.20.6.241:8080/auth/login", {
+      axios.post("http://10.20.3.40:8080/auth/login", {
         customerEmail: this.email,
         customerPassword: this.password
       })
@@ -25,7 +28,11 @@ export default {
         console.log("Full response data:", response.data);  
         const token = response.data.jwt;
         if (token) {
-          localStorage.setItem("jwt", token);
+          // localStorage.setItem("jwt", token);
+          const auth = useAuthStore();
+        //   auth.login(token);
+        auth.login(token, response.data);
+
           alert(`Logged in as ${this.email}`);
           this.$router.push('/');
         } else {
@@ -58,7 +65,7 @@ export default {
   max-width: 400px;
   margin: 80px auto;
   padding: 32px;
-  background: #bfa5a5;
+  background: #bfe5e4;
   border-radius: 12px;
 }
  
