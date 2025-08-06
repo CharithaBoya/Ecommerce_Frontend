@@ -38,7 +38,7 @@ export default {
     goToCategory(category) {
       this.$router.push({
         name: "CategoryProducts",
-        params: { categoryId: category.categoryId
+        params: { categoryId: category.id
         },
         
       });

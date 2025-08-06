@@ -6,7 +6,7 @@
         v-for="(product, index) in products"
         :key="index"
         class="product-card"
-        @click="goToProduct(product.productId)"
+        @click="goToProduct(product.id)"
       >
         <h3 class="product-name">{{ product.productName }}</h3>
         <p class="product-description">{{ product.productDescription }}</p>
@@ -41,6 +41,8 @@ export default {
       }
     },
     goToProduct(productId) {
+      console.log(productId);
+      
     this.$router.push(`/product/${productId}`);
   },
   },
@@ -98,3 +100,5 @@ export default {
   
 }
 </style>
+
+

@@ -26,15 +26,18 @@ export default {
       })
       .then(response => {
         console.log("Full response data:", response.data);  
-        const token = response.data.jwt;
+        const token = response.data.data.token;
+     
         if (token) {
           // localStorage.setItem("jwt", token);
           const auth = useAuthStore();
         //   auth.login(token);
-        auth.login(token, response.data);
+         auth.login(token, response.data.data);
+         
 
           alert(`Logged in as ${this.email}`);
-          this.$router.push('/');
+          const redirectPath = this.$route.query.redirect || '/';
+          this.$router.push(redirectPath);
         } else {
           alert("Login failed: No token received");
         }

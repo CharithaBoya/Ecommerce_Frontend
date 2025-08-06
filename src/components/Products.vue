@@ -1,6 +1,6 @@
 <template>
   <div class="products-wrapper">
-    <h2>Featured Products</h2>
+    <h2>Products</h2>
 
     <div v-if="loading">Loading products...</div>
     <div v-else class="product-grid">
@@ -17,9 +17,17 @@
             alt="Product Image"
             class="product-image"
           />
-          <h3>{{ product.productName }}</h3>
-          <p>₹{{ product.productPrice }}</p>
-          <p>⭐ {{ product.productRating }}</p>
+          <h3 class="product-name">{{ product.productName }}</h3>
+          <p class="product-brand">{{ product.productBrand }}</p>
+          <!-- <p class="product-description">
+            {{ product.productDescription.length > 100
+              ? product.productDescription.slice(0, 100) + '...'
+              : product.productDescription }}
+          </p> -->
+          <p class="product-price">₹{{ product.productPrice }}</p>
+          <p class="product-rating">⭐ {{ product.productRating }}</p>
+          <p class="product-quantity">Quantity: {{ product.productQuantity }}</p>
+          <p class="product-orders">Sold: {{ product.productOrderedCompleted }}</p>
         </div>
       </router-link>
     </div>
@@ -27,8 +35,9 @@
 </template>
 
 
+
 <script>
-import { getAllSellerProducts, getProductById } from "@/services/apiService";
+import { getAllSellerProducts } from "@/services/apiService";
 
 export default {
   name: "Products",
@@ -42,25 +51,10 @@ export default {
     this.loading = true;
     try {
       const res = await getAllSellerProducts();
-      const sellerProducts = res.data;
-
-      // For each product, fetch its image using productId
-      const productsWithImages = await Promise.all(
-        sellerProducts.map(async (product) => {
-          try {
-            const imageRes = await getProductById(product.productId);
-            product.productImageUrl = imageRes.data.productImageUrl;
-          } catch (err) {
-            console.error(`Failed to get image for productId ${product.productId}`, err);
-            product.productImageUrl = null;
-          }
-          return product;
-        })
-      );
-
-      this.products = productsWithImages;
+      console.log(res);
+      this.products = res|| [];
     } catch (error) {
-      console.error("Error fetching seller products:", error);
+      console.error("Error fetching products:", error);
     } finally {
       this.loading = false;
     }
@@ -68,30 +62,72 @@ export default {
 };
 </script>
 
-<style scoped>
+
+<style lang="scss" scoped>
 .products-wrapper {
   padding: 2rem;
-}
+  background: linear-gradient(to bottom, #FDF5E6, #FAEBD7); 
 
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1.5rem;
-}
+  h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #0a3d62;
+  }
 
-.product-card {
-  padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  text-align: center;
-}
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
 
-.product-image {
-  width: 100%;
-  height: 160px;
-  object-fit: contain;
-  margin-bottom: 1rem;
+  .product-card-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .product-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 180px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .product-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+      text-align: center;
+      margin: 0.5rem 0;
+    }
+
+    .product-price {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #27ae60;
+      margin-bottom: 0.3rem;
+    }
+
+    .product-rating {
+      font-size: 0.9rem;
+      color: #f39c12;
+    }
+  }
 }
 </style>

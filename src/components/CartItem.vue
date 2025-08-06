@@ -5,6 +5,7 @@
     <p>Quantity:
       <input type="number" v-model.number="localQty" min="1" @change="updateQty" />
     </p>
+
     <button @click="removeItem">Remove</button>
   </div>
 </template>

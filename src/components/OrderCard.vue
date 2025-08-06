@@ -14,7 +14,7 @@
       <p class="seller-phone">Phone: {{ seller.phone }}</p>
     </div>
 
-    <h4 class="order-date">Ordered Date: {{ formattedDate }}</h4>
+    <h4 class="order-date">Ordered Date: {{ order.orderDate }}</h4>
 
     <ul class="items-list">
       <li v-for="item in order.items" :key="item.productId" class="item-entry">
@@ -45,10 +45,11 @@ export default {
   },
   async created() {
     try {
-      const productResponse = await fetchProductById(this.order.item.productId);
+      const productResponse = await fetchProductById(this.order.productId);
       this.product = productResponse.data;
+      console.log(this.order)
 
-      const sellerResponse = await getSellerNameById(this.order.item.sellerId);
+      const sellerResponse = await getSellerNameById(this.order.sellerId);
       this.seller = sellerResponse.data;
     } catch (error) {
       console.error("Error fetching product or seller:", error);

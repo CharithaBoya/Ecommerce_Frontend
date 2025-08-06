@@ -22,7 +22,7 @@
 <script>
 import CartItem from '../components/CartItem.vue'
 import { useAuthStore } from '../stores/authStore'
-import { getCartItems, placeOrder } from '@/services/apiServices'
+import { getCartItems, placeOrder, deleteCartItem, updateCartQuantity } from '@/services/apiServices'
 
 export default {
   name: 'CartPage',
@@ -48,7 +48,6 @@ export default {
         const customerId = auth.customer?.customerId
 
         if (!customerId) {
-          console.warn('No customer ID found')
           return
         }
 
@@ -60,15 +59,44 @@ export default {
       }
     },
 
-    updateQuantity({ productId, quantity }) {
-      const item = this.cartItems.find(i => i.productId === productId)
-      if (item) {
-        item.quantity = quantity
-      }
-    },
+    async updateQuantity({ productId, quantity }) {
+    const item = this.cartItems.find(i => i.productId === productId);
+    if (item) {
+    item.quantity = quantity;
 
-    removeItem(productId) {
-      this.cartItems = this.cartItems.filter(item => item.productId !== productId)
+    const auth = useAuthStore();
+    const customerId = auth.customer?.customerId;
+
+    if (!customerId) return;
+
+    try {
+      await updateCartQuantity({
+        customerId,
+        productId,
+        quantity
+      });
+      console.log(`Updated quantity of product ${productId} to ${quantity}`);
+    } catch (error) {
+      console.error('Failed to update quantity:', error);
+    }
+    }},
+
+    async removeItem(productId) {
+      try {
+        const auth = useAuthStore();
+        const customerId = auth.customer?.customerId;
+
+        if (!customerId) {
+          return;
+        }
+
+        await deleteCartItem(customerId, productId); 
+        this.cartItems = this.cartItems.filter(item => item.productId !== productId);
+        console.log(`Product ${productId} removed from cart.`);
+      } catch (error) {
+        console.error('Error removing item from cart:', error);
+        alert('Failed to remove item from cart.');
+      }
     },
 
     async checkout() {
@@ -96,7 +124,7 @@ export default {
     }
   },
   mounted() {
-    this.fetchCartData()
+    this.fetchCartData() 
   }
 }
 </script>

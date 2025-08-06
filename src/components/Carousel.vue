@@ -7,15 +7,17 @@ export default {
       timer: null,
       transitioning: true,
       images: [
-        'https://i.ibb.co/sJjXGt5f/Gemini-Generated-Image-lvzmhylvzmhylvzm.png',
-        'https://i.ibb.co/dJBvbQ6X/Gemini-Generated-Image-400y6a400y6a400y.png',
-        'https://i.ibb.co/zW5L8bLL/Gemini-Generated-Image-oteifuoteifuotei.png'
+        'https://i.ibb.co/v6DZvNr6/Gemini-Generated-Image-g0exdmg0exdmg0ex.png',
+        'https://i.ibb.co/vxPKcDkD/Gemini-Generated-Image-8oobph8oobph8oob.png',
+        'https://i.ibb.co/q3X8D0Sc/Gemini-Generated-Image-l2vdy8l2vdy8l2vd.png',
+        'https://i.ibb.co/BWDTVzs/Gemini-Generated-Image-l2vdy8l2vdy8l2vd-1.png',
+        'https://i.ibb.co/XcqwHzX/Whats-App-Image-2025-08-04-at-12-33-28-PM.jpg',
+        'https://i.ibb.co/TqdvYQMZ/Whats-App-Image-2025-08-04-at-12-34-49-PM.jpg'
       ]
     };
   },
   computed: {
     carouselImages() {
-      // Clone first image at end
       return [...this.images, this.images[0]];
     }
   },
@@ -30,16 +32,13 @@ export default {
       }, 3000);
     },
     handleTransitionEnd() {
-      // If we're at the clone (last item), snap to the real first image
       if (this.currentIndex === this.images.length) {
         this.transitioning = false;
         this.currentIndex = 0;
       }
     }
   },
-  beforeDestroy() {
-    clearInterval(this.timer);
-  }
+
 };
 </script>
 
@@ -49,7 +48,7 @@ export default {
     <div
       class="carousel"
       :class="{ 'no-transition': !transitioning }"
-      :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
+      :style="{ transform: `translateX(-${currentIndex * 100}%) `}"
       @transitionend="handleTransitionEnd"
     >
       <div class="carousel-item" v-for="(image, index) in carouselImages" :key="index">
@@ -63,36 +62,37 @@ export default {
 
 <style scoped>
 .carousel-container {
-  width: 100vw;
-  overflow-x: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 30px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  /* border-radius: 12px; */
+  position: relative;
+  /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); */
 }
 
 .carousel {
   display: flex;
-  transition: transform 0.5s ease-in-out;
-  width: 100%;
-}
-
-.carousel.no-transition {
-  transition: none !important;
+  transition: transform 0.8s ease-in-out;
+  &.no-transition {
+    transition: none;
+  }
 }
 
 .carousel-item {
-  min-width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  flex: 0 0 100%;
+  max-width: 100%;
+  position: relative;
+  /* background-color: #f4f4f4; */
+
+
+  img {
+    width: 100%;
+    height: 400px;
+    object-fit: contain;
+    display: block;
+    border-radius: 12px;
+  }
 }
 
-.carousel-item img {
-  height: 400px;
-  object-fit: contain;
-  display: block;
-  margin: 0 auto;
-}
+
 </style>
-

@@ -64,7 +64,8 @@ export default {
         }
 
         const response = await axios.post('http://10.20.3.40:8080/auth/register', payload)
-        alert(response.data)
+        alert(response.data.message)
+        console.log(res)
         this.$router.push('/login')
       } catch (error) {
         if (error.response && error.response.status === 409) {
