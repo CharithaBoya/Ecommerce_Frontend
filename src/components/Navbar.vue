@@ -360,7 +360,7 @@ body {
       src="https://i.ibb.co/VYQyLqdV/close.png"
       alt="Search"
       class="icon clear-icon"
-      @click="clearSearch"
+      
     />
       
     </div>
@@ -441,6 +441,7 @@ const logout = () => {
 const searchProduct = () => {
   if (searchQuery.value.trim()) {
     window.location.href = `/search?q=${encodeURIComponent(searchQuery.value)}`;
+    
   }
 };
 
