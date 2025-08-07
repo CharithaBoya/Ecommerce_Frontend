@@ -14,20 +14,16 @@
           <img
             v-if="product.productImageUrl"
             :src="product.productImageUrl"
+             @error="handleImageError"
             alt="Product Image"
             class="product-image"
           />
           <h3 class="product-name">{{ product.productName }}</h3>
           <p class="product-brand">{{ product.productBrand }}</p>
-          <!-- <p class="product-description">
-            {{ product.productDescription.length > 100
-              ? product.productDescription.slice(0, 100) + '...'
-              : product.productDescription }}
-          </p> -->
           <p class="product-price">₹{{ product.productPrice }}</p>
           <p class="product-rating">⭐ {{ product.productRating }}</p>
           <p class="product-quantity">Quantity: {{ product.productQuantity }}</p>
-          <p class="product-orders">Sold: {{ product.productOrderedCompleted }}</p>
+          <!-- <p class="product-orders">Sold: {{ product.productOrderedCompleted }}</p> -->
         </div>
       </router-link>
     </div>
@@ -38,6 +34,7 @@
 
 <script>
 import { getAllSellerProducts } from "@/services/apiService";
+import defaultImage from '../assets/default-product.avif' 
 
 export default {
   name: "Products",
@@ -46,6 +43,11 @@ export default {
       products: [],
       loading: false,
     };
+  },
+  methods: {
+    handleImageError(event) {
+      event.target.src = defaultImage
+    },
   },
   async created() {
     this.loading = true;
@@ -59,7 +61,8 @@ export default {
       this.loading = false;
     }
   },
-};
+
+}
 </script>
 
 

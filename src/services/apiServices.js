@@ -106,25 +106,38 @@
 
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
+import router from '@/router/index'; 
 
 const api = axios.create({
-  baseURL: 'http://10.20.3.40:8080/product'
+  baseURL: 'http://10.20.6.241:8080/product'
 });
 
 const getAuthHeaders = () => {
   const authStore = useAuthStore();
-  const customerId = authStore.customer?.customerId;
-  const customerEmail = authStore.customer?.customerEmail;
 
   return {
-    Authorization: `Bearer ${localStorage.getItem('jwt')}`,
-    'X-Customer-Email': customerEmail,
-    'Customer-Id': customerId
+
+    'x-Skip-Auth': 'false' 
   };
 };
 
+const getAuthHeadersSecured = () => {
+  const authStore = useAuthStore();
 
-
+  return {
+    Authorization: `${localStorage.getItem('jwt')}`,
+    'x-Skip-Auth': 'true' 
+  };
+};
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status >= 400) {
+      router.push("/error"); 
+    }
+    return Promise.reject(error);
+  }
+);
 export const fetchProductById = (productId) => {
   return api.get('getProductById', {
     params: { productId },
@@ -135,7 +148,7 @@ export const fetchProductById = (productId) => {
 
 
 export const getSellerIdsForProduct = (productId) => {
-  return api.get('/getSellerIdsForProduct', {
+  return api.get('getSellerIdsForProduct', {
     params: { productId },
     headers: getAuthHeaders()
   });
@@ -150,7 +163,7 @@ export const getSellerIdsForProduct = (productId) => {
 
 export const getSellerNameById = async (sellerId) => {
   try {
-    const response = await api.get('http://10.20.3.40:8080/seller/api/getSellerById', {
+    const response = await api.get('http://10.20.6.241:8080/seller/api/getSellerById', {
       params: { sellerId },
       headers: getAuthHeaders()
     });
@@ -164,44 +177,52 @@ export const getSellerNameById = async (sellerId) => {
 
 
 export const postCartItem = (payload) => {
-  return api.post(`http://10.20.3.40:8080/api/cart/add`, payload, {
-    headers: getAuthHeaders()
+  return api.post(`http://10.20.6.241:8080/api/cart/add`, payload, {
+    headers: getAuthHeadersSecured()
   });
 };
 
 export const getCartItems = (customerId) => {
-  return api.get(`http://10.20.3.40:8080/api/cart/${customerId}`, {
-    headers: getAuthHeaders()
+  return api.get(`http://10.20.6.241:8080/api/cart/${customerId}`, {
+    headers: getAuthHeadersSecured()
   });
 };
 
 export const updateCartQuantity = (payload) => {
-  return api.put(`http://10.20.3.40:8080/api/cart/update`, payload, {
-    headers: getAuthHeaders()
+  return api.put(`http://10.20.6.241:8080/api/cart/update`, payload, {
+    headers: getAuthHeadersSecured()
   });
 };
 
 export const deleteCartItem = (customerId, productId) => {
-  return api.delete(`http://10.20.3.40:8080/api/cart/${customerId}/remove/${productId}`, {
-    headers: getAuthHeaders()
+  return api.delete(`http://10.20.6.241:8080/api/cart/${customerId}/remove/${productId}`, {
+    headers: getAuthHeadersSecured()
   });
 };
 
 export const clearCartItems = (customerId) => {
-  return api.delete(`http://10.20.3.40:8080/api/cart/${customerId}/clear`, {
-    headers: getAuthHeaders()
+  return api.delete(`http://10.20.6.241:8080/api/cart/${customerId}/clear`, {
+    headers: getAuthHeadersSecured()
   });
 };
-
+export const updateStockAfterOrder = async (items) => {
+  return axios.put(
+    'http://10.20.6.241:8080/product/buy',
+      items,
+  
+    {headers: getAuthHeadersSecured()}
+  );
+};
 
 export const placeOrder = (customerId) => {
-  return api.post(`http://10.20.3.40:8080/api/cart/${customerId}/checkout`, {}, {
-    headers: getAuthHeaders()
+  return api.post(`http://10.20.6.241:8080/api/cart/${customerId}/checkout`, {}, {
+    headers: getAuthHeadersSecured()
   });
 };
 
+
 export const fetchOrdersByCustomerId = (customerId) => {
-  return api.get(`http://10.20.3.40:8080/orders/getOrderHistory/${customerId}`, {
-    headers: getAuthHeaders()
+  return api.get(`http://10.20.6.241:8080/orders/getOrderHistory/${customerId}`, {
+    headers: getAuthHeadersSecured()
   });
 };

@@ -258,7 +258,7 @@ button:hover {
 <template>
   <div class="product-details-container">
     <div class="product-header">
-      <img :src="product.productImageUrl" alt="Product Image" class="product-image" />
+      <img :src="product.productImageUrl" alt="Product Image" @error="handleImageError" class="product-image" />
       <div class="product-info">
         <h2 class="product-title">{{ product.productName }}</h2>
         <p class="product-description">{{ product.productDescription }}</p>
@@ -279,11 +279,25 @@ button:hover {
         </div>
 
         <div class="price">
-          Selected Price: ₹
-          {{ selectedSeller ? selectedSeller.productPrice : 'Select a seller' }}
-        </div>
+  <template v-if="selectedSeller">
+    <div>
+      Selected Price: ₹{{ selectedSeller.productPrice }}
+    </div>
+    <div v-if="selectedSeller.productQuantity <= 0" style="color: red; font-weight: bold;">
+      Out of Stock
+    </div>
+    <div v-else>
+      In Stock: {{ selectedSeller.productQuantity }}
+    </div>
+  </template>
+</div>
 
-        <button @click="handleAddToCart">Add to Cart</button>
+<button 
+  @click="handleAddToCart"
+  :disabled="!selectedSeller || selectedSeller.productQuantity <= 0"
+>
+  Add to Cart
+</button>
       </div>
     </div>
   </div>
@@ -299,6 +313,7 @@ import {
 import { useAuthStore } from '@/stores/authStore';
 import { mapState } from 'pinia';
 import { postCartItem } from '../services/apiServices';
+import defaultImage from '@/assets/default-product.avif'
 
 export default {
   name: 'ProductDetail',
@@ -308,7 +323,8 @@ export default {
       product: null,
       sellers: [],
       sellerNames: {},
-      selectedSellerId: "Choose Seller",
+      selectedSellerId: null,
+      // selectedSellerId: "Choose Seller",
       selectedSeller: null,
     };
   },
@@ -328,6 +344,9 @@ export default {
   },
 
   methods: {
+    handleImageError(event) {
+      event.target.src = defaultImage
+    },
 
     async fetchProduct(productId) {
       try {
@@ -343,22 +362,10 @@ export default {
       try {
         const { data: sellerList } = await getSellerIdsForProduct(productId);
         this.sellers = sellerList;
-        const namePromises = this.sellerList.map(seller =>
-          getSellerNameById(seller)
-          
-        );
-        const nameResponses = await Promise.all(namePromises);
-        console.log(nameResponses)
-        nameResponses.forEach((res, index) => {
-          const sellerId = this.sellers[index].sellerId;
-          this.sellerNames[sellerId] = res.sellerName || 'Unknown';
-        });
-
-
-              if (sellers.value.length > 0) {
-          selectedSellerId.value = sellers.value[0].sellerId;
-          selectedSeller.value = sellers.value[0];
-        }
+      if (this.sellers.length > 0) {
+      this.selectedSellerId = this.sellers[0].sellerId;
+      this.selectedSeller = this.sellers[0];
+    }
       } catch (err) {
         console.error("Error fetching sellers:", err);
       }
@@ -370,7 +377,10 @@ export default {
 
       this.selectedSeller = this.sellers.find(
         (seller) => seller.sellerId === this.selectedSellerId
+
       );
+      console.log(this.selectedSellerId);
+      
     },
 
     async handleAddToCart() {
@@ -379,15 +389,22 @@ export default {
         const id=this.product.id
         alert("Please log in to add items to your cart.");
         this.$router.push({ 
-  path: '/login', 
-  query: { redirect: `/product/${id}` } 
-});
+         path: '/login', 
+         query: { redirect: `/product/${id}` } 
+        });
+      }
+      if (!this.product || !this.selectedSeller) {
+       alert("Product or seller not selected.");
+       return;
       }
 
-      if (!this.product || !this.selectedSeller) {
-        alert("Product or seller not selected.");
+      if (this.selectedSeller.productQuantity <= 0) {
+       alert("This product is out of stock.");
         return;
-      }
+    }
+
+      
+
 
       const cartItem = {
         customerId: this.customer.customerId,
@@ -409,7 +426,8 @@ export default {
         alert('Failed to add item to cart.');
       }
     }
-  }
+  },
+
 };
 </script>
 
@@ -438,9 +456,10 @@ export default {
 .product-image {
   width: 100%;
   max-width: 350px;
-  height: auto;
+  height: 500px; 
+  object-fit: contain; 
   border-radius: 1rem;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  box-shadow: 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 .product-info {

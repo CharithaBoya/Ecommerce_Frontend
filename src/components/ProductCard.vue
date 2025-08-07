@@ -16,7 +16,8 @@ export default {
   methods: {
     goToProduct() {
       this.$router.push(`/product/${this.product.productId}`);
-    }
+    },
+   
   }
 };
 </script>

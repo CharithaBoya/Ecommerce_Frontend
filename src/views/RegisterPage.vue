@@ -63,9 +63,11 @@ export default {
           address: this.address
         }
 
-        const response = await axios.post('http://10.20.3.40:8080/auth/register', payload)
+        const response = await axios.post('http://10.20.6.241:8080/auth/register', payload,{
+      headers: {
+        'x-Skip-Auth': 'false' 
+          }})
         alert(response.data.message)
-        console.log(res)
         this.$router.push('/login')
       } catch (error) {
         if (error.response && error.response.status === 409) {

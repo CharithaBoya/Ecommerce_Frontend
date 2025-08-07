@@ -2,7 +2,14 @@
   <div class="cart-page">
     <h1 class="heading">Your Cart</h1>
 
-    <div v-if="cartItems.length === 0">Your cart is empty.</div>
+    <div v-if="!isLoggedIn" class="login-prompt">
+      <p>Please log in to view your cart.</p>
+      <button @click="goToLogin">Login to Start Shopping</button>
+    </div>
+
+    <div v-else-if="cartItems.length === 0">
+      Your cart is empty.
+    </div>
 
     <CartItem
       v-for="item in cartItems"
@@ -14,7 +21,9 @@
 
     <div class="total-section" v-if="cartItems.length > 0">
       <p>Total: ₹{{ totalAmount }}</p>
-      <button @click="checkout">Checkout</button>
+      <button @click="checkout" 
+    :disabled="hasOutOfStockItem"
+  >Checkout</button>
     </div>
   </div>
 </template>
@@ -22,7 +31,13 @@
 <script>
 import CartItem from '../components/CartItem.vue'
 import { useAuthStore } from '../stores/authStore'
-import { getCartItems, placeOrder, deleteCartItem, updateCartQuantity } from '@/services/apiServices'
+import {
+  getCartItems,
+  placeOrder,
+  deleteCartItem,
+  updateCartQuantity,
+  updateStockAfterOrder
+} from '@/services/apiServices'
 
 export default {
   name: 'CartPage',
@@ -31,7 +46,8 @@ export default {
   },
   data() {
     return {
-      cartItems: []
+      cartItems: [],
+      isLoggedIn: false
     }
   },
   computed: {
@@ -39,20 +55,22 @@ export default {
       return this.cartItems.reduce((sum, item) => {
         return sum + (item.productPrice || 0) * (item.quantity || 1)
       }, 0)
-    }
+    },
+  
   },
   methods: {
+    goToLogin() {
+      this.$router.push({ path: '/login', query: { redirect: '/cart' } })
+    },
+
     async fetchCartData() {
       try {
         const auth = useAuthStore()
         const customerId = auth.customer?.customerId
 
-        if (!customerId) {
-          return
-        }
+        if (!customerId) return
 
         const response = await getCartItems(customerId)
-        console.log('Fetched cart items:', response.data)
         this.cartItems = response.data.items
       } catch (error) {
         console.error('Failed to fetch cart items:', error)
@@ -60,50 +78,41 @@ export default {
     },
 
     async updateQuantity({ productId, quantity }) {
-    const item = this.cartItems.find(i => i.productId === productId);
-    if (item) {
-    item.quantity = quantity;
+      const item = this.cartItems.find(i => i.productId === productId)
+      if (!item) return
 
-    const auth = useAuthStore();
-    const customerId = auth.customer?.customerId;
+      item.quantity = quantity
 
-    if (!customerId) return;
+      const auth = useAuthStore()
+      const customerId = auth.customer?.customerId
+      if (!customerId) return
 
-    try {
-      await updateCartQuantity({
-        customerId,
-        productId,
-        quantity
-      });
-      console.log(`Updated quantity of product ${productId} to ${quantity}`);
-    } catch (error) {
-      console.error('Failed to update quantity:', error);
-    }
-    }},
+      try {
+        await updateCartQuantity({ customerId, productId, quantity })
+        console.log(`Updated quantity of product `)
+      } catch (error) {
+        console.error('Failed to update quantity:', error)
+      }
+    },
 
     async removeItem(productId) {
       try {
-        const auth = useAuthStore();
-        const customerId = auth.customer?.customerId;
+        const auth = useAuthStore()
+        const customerId = auth.customer?.customerId
+        if (!customerId) return
 
-        if (!customerId) {
-          return;
-        }
-
-        await deleteCartItem(customerId, productId); 
-        this.cartItems = this.cartItems.filter(item => item.productId !== productId);
-        console.log(`Product ${productId} removed from cart.`);
+        await deleteCartItem(customerId, productId)
+        this.cartItems = this.cartItems.filter(item => item.productId !== productId)
+        console.log(`Product ${productId} removed from cart.`)
       } catch (error) {
-        console.error('Error removing item from cart:', error);
-        alert('Failed to remove item from cart.');
+        console.error('Error removing item from cart:', error)
+        alert('Failed to remove item from cart.')
       }
     },
 
     async checkout() {
       const auth = useAuthStore()
       const customerId = auth.customer?.customerId
-      console.log(customerId)
-
       if (!customerId) {
         alert('Customer not logged in.')
         return
@@ -113,10 +122,27 @@ export default {
         alert('Cart is empty.')
         return
       }
-
+      if (this.hasOutOfStockItem) {
+        alert('One or more items in your cart do not have enough stock. Please update your cart.')
+        return
+      }
       try {
-        await placeOrder(customerId)
-        this.$router.push('/checkout-success')
+      
+        const stockUpdatePayload = this.cartItems.map(item => ({
+          productId: item.productId,
+          sellerId: item.sellerId,
+          quantity: item.quantity
+        }))
+
+        const stockUpdateResponse = await updateStockAfterOrder(stockUpdatePayload)
+        console.log(stockUpdateResponse.data)
+        if (stockUpdateResponse.data==="successful") {
+          this.$router.push('/checkout-success')
+          await placeOrder(customerId)
+        } else {
+          alert(stockUpdateResponse.data)
+        }
+
       } catch (err) {
         console.error('Checkout failed:', err)
         alert('Failed to place order.')
@@ -124,7 +150,13 @@ export default {
     }
   },
   mounted() {
-    this.fetchCartData() 
+    const auth = useAuthStore()
+    const customerId = auth.customer?.customerId
+    this.isLoggedIn = !!customerId
+
+    if (this.isLoggedIn) {
+      this.fetchCartData()
+    }
   }
 }
 </script>

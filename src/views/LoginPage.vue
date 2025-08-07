@@ -20,12 +20,17 @@ export default {
   },
   methods: {
     handleLogin() {
-      axios.post("http://10.20.3.40:8080/auth/login", {
+      axios.post("http://10.20.6.241:8080/auth/login", {
         customerEmail: this.email,
         customerPassword: this.password
-      })
+      },
+    {
+      headers: {
+        'x-Skip-Auth': 'false' 
+      }
+    })
       .then(response => {
-        console.log("Full response data:", response.data);  
+        console.log("Full response data:", response.data.data.token);  
         const token = response.data.data.token;
      
         if (token) {

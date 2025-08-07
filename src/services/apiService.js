@@ -47,7 +47,8 @@
 import axios from "axios";
 import { useAuthStore } from '@/stores/authStore';
 
-const BASE_URL = "http://10.20.3.40:8080/product";
+
+const BASE_URL = "http://10.20.6.241:8080/product";
 
 
 const api = axios.create({
@@ -59,11 +60,10 @@ const getAuthHeaders = () => {
   const customerId = authStore.customer?.customerId;
   const customerEmail = authStore.customer?.customerEmail;
 
-  return {
-    Authorization: `Bearer ${localStorage.getItem('jwt')}`,
-    'X-Customer-Email': customerEmail,
-    'Customer-Id': customerId
+    return {
+    'x-Skip-Auth': 'false' 
   };
+  
 };   
 
 export const getAllCategories = async () => {

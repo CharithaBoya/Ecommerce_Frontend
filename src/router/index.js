@@ -6,6 +6,7 @@ import CartPage from '../views/CartPage.vue'
 import OrderHistory from '@/views/OrderHistory.vue'
 import OrderSuccess from '../views/OrderSuccess.vue'
 import UserDetails from '../views/UserDetails.vue'
+import NotFound from '@/views/NotFound.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -28,9 +29,19 @@ const router = createRouter({
     component: RegisterPage
   },
   {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: NotFound,
+  },
+  {
   path: '/cart',
   name: 'Cart',
   component: CartPage
+},
+{
+  path: '/error',
+  name: 'ErrorPage',
+  component: () => import('@/views/ErrorPage.vue')
 },
 {
   path: '/order-history',

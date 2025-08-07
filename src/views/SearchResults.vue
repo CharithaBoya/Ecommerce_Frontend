@@ -1,8 +1,15 @@
 <template>
   <div class="search-results">
     <h2>Search Results</h2>
+
+    <div class="sort-buttons">
+      <button @click="setSort('price')">Sort by Price</button>
+      <button @click="setSort('rating')">Sort by Rating</button>
+    </div>
+
     <div v-if="loading">Loading...</div>
     <div v-else-if="products.length === 0">No products found.</div>
+
     <div v-else class="product-grid">
       <router-link
         v-for="product in products"
@@ -27,49 +34,101 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
 
 export default {
-  name: "SearchResults",
+  name: 'SearchResults',
   data() {
     return {
-      searchTerm: "",
+      searchTerm: '',
       products: [],
       loading: true,
+      sortBy: '', 
+      lastQuery: '',
     };
   },
-  async created() {
-    this.searchTerm = this.$route.query.q || "";
-    if (this.searchTerm.trim()) {
-      try {
-        const response = await axios.get(
-          `http://10.20.3.40:8080/elasticsearch/search?name=${encodeURIComponent(
-            this.searchTerm
-          )}`
-        );
+  watch: {
+    '$route.query.q': {
+      immediate: true,
+      handler(newQuery) {
+        const cleanedQuery = newQuery?.trim() || '';
 
-        this.products = response.data; // Directly use the result
+        if (cleanedQuery !== this.lastQuery) {
+          this.sortBy = ''; 
+        }
+
+        this.lastQuery = cleanedQuery;
+        this.searchTerm = cleanedQuery;
+
+        this.fetchProducts();
+      },
+    },
+  },
+  methods: {
+    async fetchProducts() {
+      this.loading = true;
+
+      if (!this.searchTerm.trim()) {
+        this.products = [];
+        this.loading = false;
+        return;
+      }
+
+      try {
+        let apiUrl = `http://10.20.6.241:8080/elasticsearch/search?name=${encodeURIComponent(this.searchTerm)}`;
+
+        if (this.sortBy) {
+          apiUrl += `&sortBy=${encodeURIComponent(this.sortBy)}`;
+        }
+
+         const response = await axios.get(apiUrl, {
+    headers: {
+      'x-Skip-Auth': 'false'
+    }
+  });
+
+        this.products = response.data;
       } catch (error) {
-        console.error("Search failed:", error);
+        console.error('Search failed:', error);
         this.products = [];
       } finally {
         this.loading = false;
       }
-    }
+    },
+
+    setSort(option) {
+      this.sortBy = option;
+      this.fetchProducts();
+    },
   },
 };
 </script>
+
 
 <style scoped>
 .search-results {
   padding: 2rem;
 }
 
-.search-results h2 {
-  text-align: center;
-  margin-bottom: 2rem;
-  font-size: 2rem;
-  color: #333;
+.sort-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.sort-buttons button {
+  padding: 0.5rem 1rem;
+  background-color: #0A1128;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.sort-buttons button:hover {
+  background-color: #001f5c;
 }
 
 .product-grid {
@@ -101,11 +160,6 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: box-shadow 0.3s;
-}
-
-.product-card:hover {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 .product-image {
