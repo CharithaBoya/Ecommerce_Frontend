@@ -107,9 +107,7 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 import router from '@/router/index'; 
-import { useToast } from "vue-toastification";
 
-const toast = useToast();
 
 const api = axios.create({
   baseURL: 'http://10.20.6.241:8080/product'
@@ -188,8 +186,8 @@ export const postCartItem = (payload) => {
   });
 };
 
-export const getCartItems = (customerId) => {
-  return api.get(`http://10.20.6.241:8080/api/cart/${customerId}`, {
+export const getCartItems = () => {
+  return api.get(`http://10.20.6.241:8080/api/cart/get`, {
     headers: getAuthHeadersSecured()
   });
 };
@@ -200,14 +198,14 @@ export const updateCartQuantity = (payload) => {
   });
 };
 
-export const deleteCartItem = (customerId, productId) => {
-  return api.delete(`http://10.20.6.241:8080/api/cart/${customerId}/remove/${productId}`, {
+export const deleteCartItem = (customerEmail, productId) => {
+  return api.delete(`http://10.20.6.241:8080/api/cart/${customerEmail}/remove/${productId}`, {
     headers: getAuthHeadersSecured()
   });
 };
 
-export const clearCartItems = (customerId) => {
-  return api.delete(`http://10.20.6.241:8080/api/cart/${customerId}/clear`, {
+export const clearCartItems = (customerEmail) => {
+  return api.delete(`http://10.20.6.241:8080/api/cart/${customerEmail}/clear`, {
     headers: getAuthHeadersSecured()
   });
 };
@@ -220,15 +218,15 @@ export const updateStockAfterOrder = async (items) => {
   );
 };
 
-export const placeOrder = (customerId) => {
-  return api.post(`http://10.20.6.241:8080/api/cart/${customerId}/checkout`, {}, {
+export const placeOrder = (customerEmail) => {
+  return api.post(`http://10.20.6.241:8080/api/cart/${customerEmail}/checkout`, {}, {
     headers: getAuthHeadersSecured()
   });
 };
 
 
 export const fetchOrdersByCustomerId = (customerId) => {
-  return api.get(`http://10.20.6.241:8080/orders/getOrderHistory/${customerId}`, {
+  return api.get(`http://10.20.6.241:8080/orders/getOrderHistory/${customerEmail}`, {
     headers: getAuthHeadersSecured()
   });
 };

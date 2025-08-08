@@ -194,8 +194,11 @@ export default {
     <h2>Search Results</h2>
 
     <div class="sort-buttons">
-      <button @click="setSort('price')">Sort by Price</button>
-      <button @click="setSort('rating')">Sort by Rating</button>
+      <select v-model="sortBy" @change="setSort(sortBy)" class="sort-select">
+    <option disabled value="">Sort By</option>
+    <option value="price">Price</option>
+    <option value="rating">Rating</option>
+    </select>
     </div>
 
     <div v-if="loading">Loading...</div>
@@ -246,7 +249,7 @@ export default {
       sortBy: '',
       lastQuery: '',
       page: 0,
-      size: 4, // number of products per page
+      size: 4, 
       hasMore: false
     };
   },
@@ -258,7 +261,7 @@ export default {
 
         if (cleanedQuery !== this.lastQuery) {
           this.sortBy = '';
-          this.page = 0; // reset to first page on new search
+          this.page = 0; 
         }
 
         this.lastQuery = cleanedQuery;
@@ -302,7 +305,7 @@ export default {
         }
 
         this.products = productsWithSellers;
-        this.hasMore = fetchedProducts.length === this.size; // if less than size, no more pages
+        this.hasMore = fetchedProducts.length === this.size; 
       } catch (error) {
         console.error('Search failed:', error);
         this.products = [];
@@ -314,7 +317,7 @@ export default {
 
     setSort(option) {
       this.sortBy = option;
-      this.page = 0; // reset to first page when sorting changes
+      this.page = 0; 
       this.fetchProducts();
     },
 
@@ -380,7 +383,22 @@ export default {
 .product-card-link:hover {
   transform: translateY(-5px);
 }
+.sort-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+.sort-select{
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
 
+}
 .product-card {
   background: #fff;
   border-radius: 12px;

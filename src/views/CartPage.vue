@@ -77,8 +77,9 @@ export default {
         const customerId = this.getCustomer?.customerId
         if (!customerId) return
 
-        const response = await getCartItems(customerId)
-        this.cartItems = response.data.items
+        const response = await getCartItems()
+        this.cartItems = response.data.cart
+        console.log('Cart API response:', response.data)
       } catch (error) {
         console.error('Failed to fetch cart items:', error)
       }

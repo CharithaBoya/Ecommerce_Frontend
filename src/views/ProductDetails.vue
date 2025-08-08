@@ -279,7 +279,7 @@ button:hover {
         </div>
 
         <div class="price">
-  <template v-if="selectedSeller">
+  <div v-if="selectedSeller">
     <div>
       Selected Price: ₹{{ selectedSeller.productPrice }}
     </div>
@@ -289,7 +289,7 @@ button:hover {
     <div v-else>
       In Stock: {{ selectedSeller.productQuantity }}
     </div>
-  </template>
+  </div>
 </div>
 
 <button 
@@ -385,7 +385,6 @@ export default {
 
     async handleAddToCart() {
        const toast = useToast()
-
       if (!this.isLoggedIn || !this.customerId) {
         const id=this.product.id
         toast.error("Please log in to add items to your cart.");
@@ -397,17 +396,15 @@ export default {
       if (!this.product || !this.selectedSeller) {
        toast.error("Product or seller not selected.");
        return;
-      }
-
-      
+      }      
       const cartItem = {
-        customerId: this.customer.customerId,
-        customerEmail: this.customer.customerEmail,
+        // customerId: this.customer.customerId,
+        // customerEmail: this.customer.customerEmail,
         productId: this.$route.params.productId,
-        productName: this.product.productName,
-        productImageUrl:this.product.productImageUrl,
+        // productName: this.product.productName,
+        // productImageUrl:this.product.productImageUrl,
         quantity: 1,
-        productPrice: this.selectedSeller.productPrice,
+        // productPrice: this.selectedSeller.productPrice,
         sellerId: this.selectedSeller.sellerId,
       };
 
