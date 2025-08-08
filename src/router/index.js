@@ -41,8 +41,9 @@ const router = createRouter({
 {
   path: '/error',
   name: 'ErrorPage',
-  component: () => import('@/views/ErrorPage.vue')
+  component: () => import('../views/ErrorPage.vue'),
 },
+
 {
   path: '/order-history',
   name: 'OrderHistory',

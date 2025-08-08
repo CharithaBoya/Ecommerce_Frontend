@@ -402,10 +402,7 @@ export default {
        alert("This product is out of stock.");
         return;
     }
-
       
-
-
       const cartItem = {
         customerId: this.customer.customerId,
         customerEmail: this.customer.customerEmail,

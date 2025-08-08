@@ -46,6 +46,7 @@
 
 import axios from "axios";
 import { useAuthStore } from '@/stores/authStore';
+import router from '@/router/index'; 
 
 
 const BASE_URL = "http://10.20.6.241:8080/product";
@@ -65,7 +66,15 @@ const getAuthHeaders = () => {
   };
   
 };   
-
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status >= 400) {
+      router.push("/error"); 
+    }
+    return Promise.reject(error);
+  }
+);
 export const getAllCategories = async () => {
   try {
     const response = await api.get('getAllCategories', {

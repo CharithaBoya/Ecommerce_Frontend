@@ -44,26 +44,27 @@ export default {
   computed: {
   formattedDate() {
     const date = new Date(this.order.orderDate);
-    return date.toLocaleDateString(); // e.g. 08/07/2025
+    return date.toLocaleDateString(); 
   },
   formattedTime() {
     const date = new Date(this.order.orderDate);
-    return date.toLocaleTimeString(); // e.g. 10:45:12 AM
+    return date.toLocaleTimeString(); 
   }
 },
-  async created() {
-    try {
-      const productResponse = await fetchProductById(this.order.productId);
-      this.product = productResponse.data;
-      console.log(this.order)
+}
+//   async created() {
+//    try {
+//       const productResponse = await fetchProductById(this.order.productId);
+//       this.product = productResponse.data;
+//       console.log(this.order)
 
-      const sellerResponse = await getSellerNameById(this.order.sellerId);
-      this.seller = sellerResponse.data;
-    } catch (error) {
-      console.error("Error fetching product or seller:", error);
-    }
-  },
-};
+//       const sellerResponse = await getSellerNameById(this.order.sellerId);
+//       this.seller = sellerResponse.data;
+//     } catch (error) {
+//       console.error("Error fetching product or seller:", error);
+//     }
+//   },
+// }; 
 </script>
 <style>
 .order-card {

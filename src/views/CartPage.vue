@@ -1,8 +1,8 @@
-<template>
+ <template>
   <div class="cart-page">
     <h1 class="heading">Your Cart</h1>
 
-    <div v-if="!isLoggedIn" class="login-prompt">
+    <div v-if="!getIsLoggedIn" class="login-prompt">
       <p>Please log in to view your cart.</p>
       <button @click="goToLogin">Login to Start Shopping</button>
     </div>
@@ -17,19 +17,23 @@
       :item="item"
       @update-qty="updateQuantity"
       @remove="removeItem"
-    />
+    >
+    </CartItem>
 
     <div class="total-section" v-if="cartItems.length > 0">
       <p>Total: ₹{{ totalAmount }}</p>
-      <button @click="checkout" 
-    :disabled="hasOutOfStockItem"
-  >Checkout</button>
+      <button 
+        @click="checkout"
+      >
+        Checkout
+      </button>
     </div>
   </div>
 </template>
 
 <script>
 import CartItem from '../components/CartItem.vue'
+import { mapGetters } from 'pinia'
 import { useAuthStore } from '../stores/authStore'
 import {
   getCartItems,
@@ -46,17 +50,21 @@ export default {
   },
   data() {
     return {
-      cartItems: [],
-      isLoggedIn: false
+      cartItems: []
     }
   },
   computed: {
+    ...mapGetters(useAuthStore, ['getIsLoggedIn', 'getCustomer']),
+
     totalAmount() {
       return this.cartItems.reduce((sum, item) => {
         return sum + (item.productPrice || 0) * (item.quantity || 1)
       }, 0)
     },
-  
+
+    hasOutOfStockItem() {
+      return this.cartItems.some(item => item.availableQuantity < item.quantity)
+    }
   },
   methods: {
     goToLogin() {
@@ -65,9 +73,7 @@ export default {
 
     async fetchCartData() {
       try {
-        const auth = useAuthStore()
-        const customerId = auth.customer?.customerId
-
+        const customerId = this.getCustomer?.customerId
         if (!customerId) return
 
         const response = await getCartItems(customerId)
@@ -82,14 +88,12 @@ export default {
       if (!item) return
 
       item.quantity = quantity
-
-      const auth = useAuthStore()
-      const customerId = auth.customer?.customerId
+      const customerId = this.getCustomer?.customerId
       if (!customerId) return
 
       try {
         await updateCartQuantity({ customerId, productId, quantity })
-        console.log(`Updated quantity of product `)
+        console.log(`Updated quantity of product ${productId}`)
       } catch (error) {
         console.error('Failed to update quantity:', error)
       }
@@ -97,8 +101,7 @@ export default {
 
     async removeItem(productId) {
       try {
-        const auth = useAuthStore()
-        const customerId = auth.customer?.customerId
+        const customerId = this.getCustomer?.customerId
         if (!customerId) return
 
         await deleteCartItem(customerId, productId)
@@ -111,8 +114,7 @@ export default {
     },
 
     async checkout() {
-      const auth = useAuthStore()
-      const customerId = auth.customer?.customerId
+      const customerId = this.getCustomer?.customerId
       if (!customerId) {
         alert('Customer not logged in.')
         return
@@ -122,12 +124,12 @@ export default {
         alert('Cart is empty.')
         return
       }
-      if (this.hasOutOfStockItem) {
-        alert('One or more items in your cart do not have enough stock. Please update your cart.')
-        return
-      }
+      // if (this.hasOutOfStockItem) {
+      //   alert('One or more items in your cart do not have enough stock. Please update your cart.')
+      //   return
+      // }
+
       try {
-      
         const stockUpdatePayload = this.cartItems.map(item => ({
           productId: item.productId,
           sellerId: item.sellerId,
@@ -136,13 +138,12 @@ export default {
 
         const stockUpdateResponse = await updateStockAfterOrder(stockUpdatePayload)
         console.log(stockUpdateResponse.data)
-        if (stockUpdateResponse.data==="successful") {
-          this.$router.push('/checkout-success')
+        if (stockUpdateResponse.data === "successful") {
           await placeOrder(customerId)
+          this.$router.push('/checkout-success')
         } else {
           alert(stockUpdateResponse.data)
         }
-
       } catch (err) {
         console.error('Checkout failed:', err)
         alert('Failed to place order.')
@@ -150,11 +151,7 @@ export default {
     }
   },
   mounted() {
-    const auth = useAuthStore()
-    const customerId = auth.customer?.customerId
-    this.isLoggedIn = !!customerId
-
-    if (this.isLoggedIn) {
+    if (this.getIsLoggedIn) {
       this.fetchCartData()
     }
   }
@@ -189,3 +186,4 @@ button {
   cursor: pointer;
 }
 </style>
+

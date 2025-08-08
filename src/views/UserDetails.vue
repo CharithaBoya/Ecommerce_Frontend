@@ -2,7 +2,7 @@
   <div class="profile">
     <h2 class="title">My Profile</h2>
 
-    <div v-if="isLoggedIn && fetchedCustomerData">
+    <div v-if="getIsLoggedIn && fetchedCustomerData">
       <div class="field"><strong>Full Name:</strong> {{ fetchedCustomerData.customerName }}</div>
       <div class="field"><strong>Phone:</strong> {{ fetchedCustomerData.phoneNo }}</div>
       <div class="field"><strong>Email:</strong> {{ fetchedCustomerData.customerEmail }}</div>
@@ -15,49 +15,66 @@
   </div>
 </template>
 
-<script setup>
-import { computed, onMounted, ref } from 'vue';
-import { useAuthStore } from '../stores/authStore';
+<script>
 import axios from 'axios';
+import { mapGetters, mapActions } from 'pinia';
+import { useAuthStore } from '../stores/authStore';
 
-const auth = useAuthStore();
-const isLoggedIn = computed(() => auth.isLoggedIn);
-const customer = computed(() => auth.customer || {});
-const fetchedCustomerData = ref(null); 
+export default {
+  name: 'ProfilePage',
 
-onMounted(() => {
-  const token = localStorage.getItem("jwt");
-  const email = customer.value?.customerEmail;
+  data() {
+    return {
+      fetchedCustomerData: null
+    };
+  },
 
-  console.log("Customer email before fetch:", email);
+  computed: {
+    ...mapGetters(useAuthStore, ['getIsLoggedIn', 'getCustomer'])
+  },
 
-  if (email && token) {
-    axios.get(`http://10.20.3.40:8080/auth/customer/${email}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'X-Customer-Email': email,
+  methods: {
+    ...mapActions(useAuthStore, ['logout']),
+
+    fetchCustomerData() {
+      const token = localStorage.getItem("jwt");
+      const email = this.getCustomer?.customerEmail;
+
+      console.log("Customer email before fetch:", email);
+
+      if (email && token) {
+        axios.get(`http://10.20.6.241:8080/auth/customer/${email}`, {
+          headers: {
+            Authorization: token,
+            'x-Skip-Auth': 'true'
+          }
+        })
+          .then(response => {
+            console.log("Full response data:", response.data);
+
+            if (response.data?.data) {
+              this.fetchedCustomerData = response.data.data;
+            } else {
+              alert("No customer data received.");
+            }
+          })
+          .catch(error => {
+            console.error("Error fetching user data:", error);
+            alert("Failed to fetch user data: " + (error.response?.data?.message || error.message));
+          });
+      } else {
+        console.warn("Token or email missing. Cannot fetch user data.");
       }
-    })
-      .then(response => {
-        console.log("Full response data:", response.data);
+    }
+  },
 
-        if (response.data?.data) {
-          fetchedCustomerData.value = response.data.data; 
-        } else {
-          alert("No customer data received.");
-        }
-      })
-      .catch(error => {
-        console.error("Error fetching user data:", error);
-        alert("Failed to fetch user data: " + (error.response?.data?.message || error.message));
-      });
-  } else {
-    console.warn("Token or email missing. Cannot fetch user data.");
+  mounted() {
+    this.fetchCustomerData();
   }
-});
+};
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .profile {
   max-width: 600px;
   margin: 80px auto;

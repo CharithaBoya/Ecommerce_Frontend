@@ -5,6 +5,12 @@
     <router-link to="/">Back to Home</router-link>
   </div>
 </template>
+<script>
 
-<script setup>
 </script>
+<style>
+    .error-page{
+        text-align: center;
+        margin-top: 100px;   
+    }
+</style>
