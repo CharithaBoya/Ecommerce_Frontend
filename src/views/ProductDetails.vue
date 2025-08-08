@@ -314,7 +314,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { mapState } from 'pinia';
 import { postCartItem } from '../services/apiServices';
 import defaultImage from '@/assets/default-product.avif'
-
+import { useToast } from 'vue-toastification'
 export default {
   name: 'ProductDetail',
 
@@ -384,24 +384,21 @@ export default {
     },
 
     async handleAddToCart() {
+       const toast = useToast()
 
       if (!this.isLoggedIn || !this.customerId) {
         const id=this.product.id
-        alert("Please log in to add items to your cart.");
+        toast.error("Please log in to add items to your cart.");
         this.$router.push({ 
          path: '/login', 
          query: { redirect: `/product/${id}` } 
         });
       }
       if (!this.product || !this.selectedSeller) {
-       alert("Product or seller not selected.");
+       toast.error("Product or seller not selected.");
        return;
       }
 
-      if (this.selectedSeller.productQuantity <= 0) {
-       alert("This product is out of stock.");
-        return;
-    }
       
       const cartItem = {
         customerId: this.customer.customerId,
@@ -416,11 +413,11 @@ export default {
 
       try {
         await postCartItem(cartItem);
-        alert('Item added to cart!');
+        toast.success('item added to cart.')
         this.$router.push('/cart');
       } catch (err) {
         console.error('Add to cart failed:', err);
-        alert('Failed to add item to cart.');
+        toast.error('Failed to add item to cart.');
       }
     }
   },
@@ -520,6 +517,11 @@ button {
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
+}
+button:disabled {
+  background: #9ca3af; 
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 button:hover {

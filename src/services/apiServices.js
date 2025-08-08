@@ -107,6 +107,9 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 import router from '@/router/index'; 
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
 
 const api = axios.create({
   baseURL: 'http://10.20.6.241:8080/product'
@@ -132,8 +135,11 @@ const getAuthHeadersSecured = () => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status >= 400) {
-      router.push("/error"); 
+    if (error.response && error.response.data) {
+      const message = error.response.data.message || 'Something went wrong. Please try again.';
+      toast.error(message); 
+    } else {
+      toast.error('Network error. Please check your connection.');
     }
     return Promise.reject(error);
   }

@@ -55,7 +55,8 @@
 
 <style scoped>
 .cart-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: 120px 1fr 120px 140px 100px;
   border: 1px solid #ccc;
   background-color: rgb(249, 253, 252);
   border-radius: 20px;
@@ -75,7 +76,7 @@
 }
 
 .heading {
-  font-size: 1.5rem;
+  font-size: 1rem;
   margin-bottom: 1rem;
   color: #333;
   text-align: center;

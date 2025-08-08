@@ -1,19 +1,6 @@
 <template>
   <div class="order-card">
     <h3 class="order-id">Order #{{ order.orderId }}</h3>
-
-    <div v-if="product" class="product-details">
-      <img :src="product.productImageUrl" :alt="product.productName" class="product-image" />
-      <h4 class="product-name">Product: {{ product.productName }}</h4>
-      <p class="product-price">Price: ₹{{ product.productPrice }}</p>
-    </div>
-
-    <div v-if="seller" class="seller-details">
-      <h4 class="seller-name">Seller: {{ seller.sellerName }}</h4>
-      <p class="seller-email">Email: {{ seller.email }}</p>
-      <p class="seller-phone">Phone: {{ seller.phone }}</p>
-    </div>
-
     <h4 class="order-date">
   Ordered Date: {{ formattedDate }} <br />
   Ordered Time: {{ formattedTime }}
@@ -21,14 +8,13 @@
 
 <ul class="items-list">
   <li v-for="item in order.items" :key="item.productId" class="item-entry">
-    {{ item.productName }} — Qty: {{ item.quantity }} @ ₹{{ item.productPrice }}
+    {{ item.productName }} — Qty: {{ item.quantity }} @ ₹{{ item.totalPrice }}
   </li>
 </ul>
   </div>
 </template>
 
 <script>
-import { fetchProductById, getSellerNameById } from "../services/apiServices";
 
 export default {
   name: "OrderCard",
@@ -49,7 +35,15 @@ export default {
   formattedTime() {
     const date = new Date(this.order.orderDate);
     return date.toLocaleTimeString(); 
-  }
+  },
+  // totalprice(){
+  //   if (this.order.items && this.order.items.length > 0) {
+  //     return this.order.items.reduce((sum, item) => {
+  //       return sum + (item.productPrice * item.quantity);
+  //     }, 0);
+  //   }
+  //   return 0;
+  // }
 },
 }
 //   async created() {

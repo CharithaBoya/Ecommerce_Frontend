@@ -172,6 +172,7 @@ export default {
 import axios from 'axios';
 import { mapActions } from 'pinia';
 import { useAuthStore } from '@/stores/authStore';
+import { useToast } from 'vue-toastification';
 
 export default {
   name: 'RegisterForm',
@@ -208,6 +209,7 @@ export default {
     ...mapActions(useAuthStore, ['login']),
 
     async handleRegister() {
+      const toast = useToast();
       try {
         const payload = {
           customerName: this.name,
@@ -227,9 +229,11 @@ export default {
           }
         );
 
-        alert(response.data.message);
+          toast.success(response.data.message || "Registration successful!", {
+          timeout: 3000,
+          position: "top-right"
+        });
 
-        // Auto-login after registration
         if (response.data?.data?.token) {
           this.login(response.data.data.token, response.data.data);
         }
@@ -237,9 +241,15 @@ export default {
         this.$router.push('/login');
       } catch (error) {
         if (error.response && error.response.status === 409) {
-          alert('User already exists');
+           toast.error("User already exists", {
+            timeout: 3000,
+            position: "top-right"
+          });
         } else {
-          alert('Registration failed. Please try again.');
+           toast.error("Registration failed. Please try again.", {
+            timeout: 3000,
+            position: "top-right"
+          });
         }
       }
     }

@@ -134,6 +134,7 @@ export default {
 import axios from 'axios';
 import { mapActions } from 'pinia';
 import { useAuthStore } from '@/stores/authStore';
+import { useToast } from 'vue-toastification';
 
 export default {
   name: 'LoginForm',
@@ -156,6 +157,7 @@ export default {
     ...mapActions(useAuthStore, ['login']),
 
     handleLogin() {
+      const toast =useToast();
       axios.post(
         "http://10.20.6.241:8080/auth/login",
         {
@@ -173,18 +175,24 @@ export default {
         console.log("Full response data:", token);
 
         if (token) {
-          // Call Pinia store action
           this.login(token, response.data.data);
 
-          alert(`Logged in as ${this.email}`);
+          toast.success(`Logged in as ${this.email}`, {
+            timeout: 3000,
+            position: "top-right"
+          });
           const redirectPath = this.$route.query.redirect || '/';
           this.$router.push(redirectPath);
         } else {
-          alert("Login failed: No token received");
+          toast.error("Login failed: No token received",{timeout: 3000,
+            position: "top-right"});
         }
       })
       .catch(error => {
-        alert("Login failed: " + (error.response?.data?.message || error.message));
+        toast.error(error.response?.data?.message || error.message,{
+          timeout: 3000,
+            position: "top-right"
+        });
       });
     }
   }

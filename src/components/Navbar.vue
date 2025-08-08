@@ -113,7 +113,6 @@ const clearSearch = () => {
   searchQuery.value = "";
 };
 </script> -->
-
 <template>
   <nav class="navbar">
     <router-link to="/" class="navbar-logo">
@@ -153,7 +152,7 @@ const clearSearch = () => {
       </li>
     </ul>
 
-    <div class="profile-container">
+    <div class="profile-container" ref="profileContainer">
       <template v-if="!auth.isLoggedIn">
         <router-link to="/login" class="login-link">Login /<br /> Sign Up</router-link>
       </template>
@@ -220,10 +219,21 @@ export default {
       const customer = JSON.parse(customerData);
       this.auth.login(token, customer);
     }
+
+    document.addEventListener("click", this.handleClickOutside);
+  },
+  beforeUnmount() {
+    document.removeEventListener("click", this.handleClickOutside);
   },
   methods: {
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
+    },
+    handleClickOutside(event) {
+      const profileEl = this.$refs.profileContainer;
+      if (profileEl && !profileEl.contains(event.target)) {
+        this.showDropdown = false;
+      }
     },
     logout() {
       this.auth.logout();
@@ -251,6 +261,7 @@ export default {
   },
 };
 </script>
+
 <style lang="scss" scoped>
 * {
   box-sizing: border-box;
@@ -376,7 +387,7 @@ body {
         color: white;
         border-radius: 5px;
         min-width: 160px;
-       // box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+       
 
         a,
         button {

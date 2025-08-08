@@ -42,6 +42,7 @@ import {
   updateCartQuantity,
   updateStockAfterOrder
 } from '@/services/apiServices'
+import { useToast } from 'vue-toastification'
 
 export default {
   name: 'CartPage',
@@ -62,9 +63,9 @@ export default {
       }, 0)
     },
 
-    hasOutOfStockItem() {
-      return this.cartItems.some(item => item.availableQuantity < item.quantity)
-    }
+    // hasOutOfStockItem() {
+    //   return this.cartItems.some(item => item.availableQuantity < item.quantity)
+    // }
   },
   methods: {
     goToLogin() {
@@ -93,35 +94,36 @@ export default {
 
       try {
         await updateCartQuantity({ customerId, productId, quantity })
-        console.log(`Updated quantity of product ${productId}`)
+        console.log(`Updated quantity ${productId}`)
       } catch (error) {
         console.error('Failed to update quantity:', error)
       }
     },
 
     async removeItem(productId) {
+      const toast = useToast()
       try {
         const customerId = this.getCustomer?.customerId
         if (!customerId) return
 
         await deleteCartItem(customerId, productId)
         this.cartItems = this.cartItems.filter(item => item.productId !== productId)
-        console.log(`Product ${productId} removed from cart.`)
+        toast.success(`Removed product from cart.`)
       } catch (error) {
         console.error('Error removing item from cart:', error)
-        alert('Failed to remove item from cart.')
+        toast.error('Failed to remove item from cart.')
       }
     },
 
     async checkout() {
       const customerId = this.getCustomer?.customerId
       if (!customerId) {
-        alert('Customer not logged in.')
+        toast.error('Customer not logged in.')
         return
       }
 
       if (this.cartItems.length === 0) {
-        alert('Cart is empty.')
+        toast.error('Cart is empty.')
         return
       }
       // if (this.hasOutOfStockItem) {
@@ -140,13 +142,14 @@ export default {
         console.log(stockUpdateResponse.data)
         if (stockUpdateResponse.data === "successful") {
           await placeOrder(customerId)
+          // toast.success('Order placed successfully!')
           this.$router.push('/checkout-success')
         } else {
           alert(stockUpdateResponse.data)
         }
       } catch (err) {
         console.error('Checkout failed:', err)
-        alert('Failed to place order.')
+        toast.error('Failed to place order.')
       }
     }
   },
